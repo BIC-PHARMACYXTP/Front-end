@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CustomerSupport from "../components/CustomerSupport";
-import { Bell, UploadCloud } from "lucide-react";
 import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -161,7 +160,6 @@ function TravelInsuranceOrderPage() {
     phone: "",
     address: "",
   });
-  const [wantsInvoice, setWantsInvoice] = useState(false);
 
   const [totalFee, setTotalFee] = useState(0);
   const totalSteps = 4;
@@ -321,7 +319,6 @@ function TravelInsuranceOrderPage() {
           travelInvoicePayload
         );
         const invoice_id = invoiceRes.data.invoice_id;
-        const form_id = invoiceRes.data.form_id;
 
         // 2. Đăng ký khách hàng
         const customerRes = await axios.post(

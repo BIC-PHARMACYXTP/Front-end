@@ -9,12 +9,7 @@ interface Product {
   sale: number;
 }
 
-interface Category {
-  category_id: number;
-  name: string;
-}
-
-const mockProducts = [
+const mockProducts: Product[] = [
   {
     id: 1,
     name: "Laptop Acer Nitro V Gaming ANV15-51-55CA i5 13420H/16GB/512GB/15.6",
@@ -31,14 +26,15 @@ const mockProducts = [
   },
 ];
 
-const Products = () => {
+const Products: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [searchKeyword, setSearchKeyword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchProducts = async () => {
@@ -46,7 +42,6 @@ const Products = () => {
     setError(null);
     try {
       // TODO: Thay thế bằng lệnh gọi API thực tế
-      console.log("Fetching products...");
       // const response = await fetch('/api/admin/products');
       // if (!response.ok) { throw new Error('Failed to fetch products'); }
       // const data = await response.json();
@@ -55,8 +50,8 @@ const Products = () => {
       // Mô phỏng độ trễ API và dữ liệu
       await new Promise((resolve) => setTimeout(resolve, 500));
       setProducts(mockProducts);
-      console.log("Products fetched:", mockProducts);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error("Error fetching products:", err);
       setError("Không thể tải dữ liệu sản phẩm.");
       setProducts([]);
@@ -68,12 +63,14 @@ const Products = () => {
   // Các hàm CRUD placeholder
   const handleCreate = () => {
     // TODO: Triển khai chức năng tạo sản phẩm mới (có thể dùng routing hoặc modal)
+    // eslint-disable-next-line no-console
     console.log("Initiating product creation...");
     alert("Chức năng thêm sản phẩm mới");
   };
 
   const handleEdit = (productId: number) => {
     // TODO: Triển khai chức năng chỉnh sửa sản phẩm (có thể dùng routing hoặc modal)
+    // eslint-disable-next-line no-console
     console.log("Editing product with ID:", productId);
     alert(`Chỉnh sửa sản phẩm ${productId}`);
   };
@@ -81,6 +78,7 @@ const Products = () => {
   const handleDelete = async (productId: number) => {
     if (window.confirm("Bạn có chắc muốn xóa sản phẩm này?")) {
       // TODO: Thay thế bằng lệnh gọi API xóa thực tế
+      // eslint-disable-next-line no-console
       console.log("Attempting to delete product with ID:", productId);
       try {
         // const response = await fetch(`/api/admin/products/${productId}`, { method: 'DELETE' });
@@ -88,10 +86,12 @@ const Products = () => {
 
         // Mô phỏng độ trễ API và cập nhật trạng thái
         await new Promise((resolve) => setTimeout(resolve, 300));
-        setProducts(products.filter((product) => product.id !== productId));
+        setProducts((prev) => prev.filter((product) => product.id !== productId));
+        // eslint-disable-next-line no-console
         console.log("Product deleted with ID:", productId);
         alert("Xóa sản phẩm thành công!");
       } catch (err) {
+        // eslint-disable-next-line no-console
         console.error("Error deleting product:", err);
         setError("Không thể xóa sản phẩm.");
         alert("Xóa sản phẩm thất bại!");
@@ -119,6 +119,7 @@ const Products = () => {
         <button
           className="px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition"
           onClick={handleCreate}
+          type="button"
         >
           Thêm sản phẩm
         </button>
@@ -160,16 +161,23 @@ const Products = () => {
                   {p.sale.toLocaleString()}₫
                 </td>
                 <td className="p-2 space-x-2 text-center">
-                  {/* <Link to={`/admin/products/edit/${p.id}`} className="px-2 py-1 bg-blue-500 text-white rounded text-xs">Sửa</Link> */}
+                  {/* <button
+                    className="px-2 py-1 bg-blue-500 text-white rounded text-xs"
+                    onClick={() => handleEdit(p.id)}
+                  >
+                    Sửa
+                  </button> */}
                   <button
                     className="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 transition"
                     onClick={() => handleEdit(p.id)}
+                    type="button"
                   >
                     Sửa
                   </button>
                   <button
                     className="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition"
                     onClick={() => handleDelete(p.id)}
+                    type="button"
                   >
                     Xóa
                   </button>

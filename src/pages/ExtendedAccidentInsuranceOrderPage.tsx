@@ -1,29 +1,29 @@
 import { ClipboardList, UserCircle2, CreditCard } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CustomerSupport from "../components/CustomerSupport";
-import axios, { AxiosError } from "axios";
-import feeTable from "../data/cancer_fee_table.json";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const inputClassName =
+  "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500";
+const selectClassName =
+  "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 bg-white text-base";
 
 interface ParticipantInfo {
   fullName: string;
   dateOfBirth: string;
-  gender: "male" | "female";
+  gender: "male" | "female" | "other";
   identityCard: string;
-  relationship: string;
-  phoneNumber: string;
-  email: string;
-  address: string;
-  package: "basic" | "premium" | "plus" | "plus4" | "";
-  insuranceTerm: 1 | 2 | 3;
+  relationship?: string;
+  phoneNumber?: string;
+  email?: string;
+  address?: string;
+  package: string;
+  insuranceTerm: number;
   premium: number;
-  additionalBenefitOption: "yes" | "no" | "";
-  nationality?: string;
+  additionalBenefitOption?: string;
   productPackage?: "abc" | "ab" | "";
+  nationality?: string;
 }
 
 interface CustomerInfo {
@@ -32,7 +32,7 @@ interface CustomerInfo {
   email: string;
   phone: string;
   address: string;
-  identityCard?: string;
+  identityCard: string;
   dateOfBirth?: string;
   invoice: boolean;
   companyName?: string;
@@ -45,80 +45,8 @@ interface CustomerInfo {
   insuranceStartDate: string;
 }
 
-interface InsurancePackage {
-  id: "basic" | "premium" | "plus" | "plus4";
-  name: string;
-  benefits: string[];
-  maxPayout: number;
-  annualPremium: number;
-}
-
-const INSURANCE_PACKAGES: InsurancePackage[] = [
-  {
-    id: "basic",
-    name: "Chương trình 1",
-    benefits: [
-      "Bảo hiểm ung thư giai đoạn đầu",
-      "Bảo hiểm ung thư giai đoạn muộn",
-      "Quyền lợi tử vong do ung thư",
-    ],
-    maxPayout: 200000000, // 200 triệu
-    annualPremium: 400000, // 400 nghìn/năm
-  },
-  {
-    id: "premium",
-    name: "Chương trình 2",
-    benefits: [
-      "Bảo hiểm ung thư giai đoạn đầu",
-      "Bảo hiểm ung thư giai đoạn muộn",
-      "Quyền lợi tử vong do ung thư",
-      "Trợ cấp nằm viện",
-      "Chi phí điều trị ngoại trú",
-    ],
-    maxPayout: 500000000, // 500 triệu
-    annualPremium: 800000, // 800 nghìn/năm
-  },
-  {
-    id: "plus",
-    name: "Chương trình 3",
-    benefits: [
-      "Bảo hiểm ung thư giai đoạn đầu",
-      "Bảo hiểm ung thư giai đoạn muộn",
-      "Quyền lợi tử vong do ung thư",
-      "Trợ cấp nằm viện",
-      "Chi phí điều trị ngoại trú",
-      "Quyền lợi điều trị tại nước ngoài",
-    ],
-    maxPayout: 1000000000, // 1 tỷ
-    annualPremium: 1600000, // 1.6 triệu/năm
-  },
-  {
-    id: "plus4",
-    name: "Chương trình 4",
-    benefits: [
-      "Bảo hiểm ung thư giai đoạn đầu",
-      "Bảo hiểm ung thư giai đoạn muộn",
-      "Quyền lợi tử vong do ung thư",
-      "Trợ cấp nằm viện",
-      "Chi phí điều trị ngoại trú",
-      "Quyền lợi điều trị tại nước ngoài",
-      "Quyền lợi y tế cao cấp",
-    ],
-    maxPayout: 1500000000, // 1.5 tỷ
-    annualPremium: 2000000, // 2 triệu/năm
-  },
-];
-
-const inputClassName =
-  "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500";
-const selectClassName =
-  "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 bg-white text-base";
-
 export default function CancerInsuranceOrderPage() {
-  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showError, setShowError] = useState(false);
   const totalSteps = 3; // Changed from 2 to 3 to include payment step
 
@@ -159,11 +87,12 @@ export default function CancerInsuranceOrderPage() {
     insuranceStartDate: new Date().toISOString().split("T")[0],
   });
 
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
   const calculatePremium = (
     dateOfBirth: string,
     packageId: string,
     term: number,
-    gender?: "male" | "female",
     productPackage?: "abc" | "ab" | ""
   ) => {
     if (!dateOfBirth || !packageId) return 0;
@@ -418,7 +347,6 @@ export default function CancerInsuranceOrderPage() {
           participant.dateOfBirth,
           participant.package,
           participant.insuranceTerm,
-          participant.gender,
           participant.productPackage
         );
         console.log("New premium calculated:", premium);
@@ -522,34 +450,6 @@ export default function CancerInsuranceOrderPage() {
       window.location.href = "/gio-hang.html";
     } catch (err: any) {
       alert("Lỗi: " + (err.message || "Không xác định"));
-    }
-  };
-
-  const handleParticipantCountChange = (value: number) => {
-    setParticipantCount(value);
-    if (value > participants.length) {
-      // Add new participants
-      const newParticipants = [...participants];
-      for (let i = participants.length; i < value; i++) {
-        newParticipants.push({
-          fullName: "",
-          dateOfBirth: "",
-          gender: "male",
-          identityCard: "",
-          relationship: "",
-          phoneNumber: "",
-          email: "",
-          address: "",
-          package: "basic",
-          insuranceTerm: 1,
-          premium: 0,
-          additionalBenefitOption: "",
-        });
-      }
-      setParticipants(newParticipants);
-    } else if (value < participants.length) {
-      // Remove excess participants
-      setParticipants(participants.slice(0, value));
     }
   };
 

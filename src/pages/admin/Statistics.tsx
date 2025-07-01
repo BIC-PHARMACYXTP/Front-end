@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 
-interface StatItem {
-  title: string;
-  value: number;
-  change: number;
-  icon: string;
-}
+// interface StatItem {
+//   title: string;
+//   value: number;
+//   change: number;
+//   icon: string;
+// }
 
 interface CategoryProductStat {
   category_id: number;
@@ -22,33 +22,6 @@ interface OrderProductStat {
   order_count: number;
   sold_count: number;
 }
-
-const mockStats = [
-  {
-    title: "Tổng doanh thu",
-    value: 150000000,
-    change: 12.5,
-    icon: "💰",
-  },
-  {
-    title: "Tổng đơn hàng",
-    value: 150,
-    change: 8.2,
-    icon: "📦",
-  },
-  {
-    title: "Tổng sản phẩm",
-    value: 1200,
-    change: 5.4,
-    icon: "📱",
-  },
-  {
-    title: "Tổng người dùng",
-    value: 850,
-    change: 15.3,
-    icon: "👥",
-  },
-];
 
 const mockCategoryProductStats: CategoryProductStat[] = [
   {
@@ -154,9 +127,7 @@ const mockOrderProductStats: OrderProductStat[] = [
   },
 ];
 
-const Statistics = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState("week");
-
+const Statistics: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Thống kê sản phẩm theo danh mục */}

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CustomerSupport from "../components/CustomerSupport";
-import axios from "axios";
+// import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+// const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const insuranceOptions = Array.from({ length: 20 }, (_, i) => {
   const value = 200_000_000 - i * 10_000_000;
@@ -101,11 +101,6 @@ const GPAOrderPage: React.FC = () => {
     });
   };
 
-  const handleAccountInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setAccountInfo((prev) => ({ ...prev, [name]: value }));
-  };
-
   const handleNext = () => {
     if (step === 1) {
       if (!numPeople || !amount || !!error) return;
@@ -133,32 +128,31 @@ const GPAOrderPage: React.FC = () => {
       const endDate = new Date(startDate);
       endDate.setMonth(endDate.getMonth() + insuranceDuration);
 
-      const invoice = {
-        ProductID: 9,
-        InsuranceAmount: amount,
-        InsuranceQuantity: Number(numPeople),
-        InsuranceStart: startDate.toISOString(), // RFC3339 format
-        InsuranceEnd: endDate.toISOString(), // RFC3339 format
-        ContractType: "Mới",
-        Status: "Chưa thanh toán",
-      };
+      // const invoice = {
+      //   ProductID: 9,
+      //   InsuranceAmount: amount,
+      //   InsuranceQuantity: Number(numPeople),
+      //   InsuranceStart: startDate.toISOString(), // RFC3339 format
+      //   InsuranceEnd: endDate.toISOString(), // RFC3339 format
+      //   ContractType: "Mới",
+      //   Status: "Chưa thanh toán",
+      // };
       // 2. Chuẩn bị participants với định dạng RFC3339 cho ngày sinh
-      const participantsPayload = participants.map((p) => ({
-        FullName: p.fullName,
-        Gender:
-          p.gender === "male" ? "Nam" : p.gender === "female" ? "Nữ" : "Khác",
-        BirthDate: p.dob ? new Date(p.dob).toISOString() : null, // RFC3339 format
-        IdentityNumber: p.idNumber,
-      }));
+      // const participantsPayload = participants.map((p) => ({
+      //   FullName: p.fullName,
+      //   Gender:
+      //     p.gender === "male" ? "Nam" : p.gender === "female" ? "Nữ" : "Khác",
+      //   BirthDate: p.dob ? new Date(p.dob).toISOString() : null, // RFC3339 format
+      //   IdentityNumber: p.idNumber,
+      // }));
       // 3. Gọi API tạo hóa đơn
-      const res = await axios.post(
-        `${API_URL}/api/insurance_accident/create_accident`,
-        {
-          invoice,
-          participants: participantsPayload,
-        }
-      );
-      const invoice_id = res.data.invoice?.invoice_id;
+      // const res = await axios.post(
+      //   `${API_URL}/api/insurance_accident/create_accident`,
+      //   {
+      //     invoice,
+      //     participants: participantsPayload,
+      //   }
+      // );
       // 4. (Tuỳ chọn) Gọi API update customer cho invoice nếu cần
       // await axios.post(`${API_URL}/api/insurance_accident/update_invoice_customer`, { invoice_id, customer_id: ... });
       // 5. Lưu đơn hàng vào localStorage và chuyển hướng
@@ -206,7 +200,7 @@ const GPAOrderPage: React.FC = () => {
           <div className="max-w-5xl mx-auto mb-8">
             {/* Progress Bar */}
             <div className="flex items-center justify-center mb-8">
-              {[1, 2, 3].map((s, idx) => (
+              {[1, 2, 3].map((s) => (
                 <React.Fragment key={s}>
                   <div className="flex flex-col items-center">
                     <div
@@ -546,10 +540,7 @@ const GPAOrderPage: React.FC = () => {
                               name="fullName"
                               value={accountInfo.fullName}
                               onChange={(e) =>
-                                setAccountInfo((prev) => ({
-                                  ...prev,
-                                  fullName: e.target.value,
-                                }))
+                                handleCustomerInfoChange("fullName", e.target.value)
                               }
                               className={inputClassName}
                               placeholder="Nhập họ và tên"

@@ -1,4 +1,4 @@
-import { api } from "@/lib/api";
+import axios from "axios";
 
 export interface CarBrand {
   code: string;
@@ -12,11 +12,11 @@ export interface CarModel {
 }
 
 export const getCarBrands = async (): Promise<CarBrand[]> => {
-  const response = await api.get("/car-brands");
+  const response = await axios.get("/car-brands");
   return response.data;
 };
 
 export const getCarModels = async (brandCode: string): Promise<CarModel[]> => {
-  const response = await api.get(`/car-models?brandCode=${brandCode}`);
+  const response = await axios.get(`/car-models?brandCode=${brandCode}`);
   return response.data;
 };

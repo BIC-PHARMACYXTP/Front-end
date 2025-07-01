@@ -1,4 +1,4 @@
-import { api } from "@/lib/api";
+import axios from "axios";
 
 export interface PremiumData {
   materialPremium: number;
@@ -31,6 +31,6 @@ export interface OrderData {
 export const calculatePremium = async (
   orderData: OrderData
 ): Promise<PremiumData> => {
-  const response = await api.post("/calculate-premium", orderData);
+  const response = await axios.post("/calculate-premium", orderData);
   return response.data;
 };

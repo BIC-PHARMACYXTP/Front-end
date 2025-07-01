@@ -9,7 +9,7 @@ import {
   calculateTotalInsuranceFee,
 } from "../constants/carInsurance";
 import axios from "axios";
-import { useAuth } from "../contexts/AuthContext";
+// import { useAuth } from "../contexts/AuthContext";
 
 const API_URL = import.meta.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -59,8 +59,8 @@ interface VehicleInfo {
 }
 
 export default function CarCivilLiabilityOrderPage() {
-  const { isAuthenticated, token } = useAuth();
   const navigate = useNavigate();
+  // const auth = useAuth();
 
   // State cho thông tin sản phẩm
   const [product] = useState<ProductInfo>({
@@ -371,8 +371,8 @@ export default function CarCivilLiabilityOrderPage() {
           navigate("/gio-hang.html");
         } catch (error) {
           console.error("Error creating order:", error);
-          if (error.response) {
-            console.error("Error response:", error.response.data);
+          if ((error as any).response) {
+            console.error("Error response:", (error as any).response.data);
           }
           alert("Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại sau.");
         }

@@ -2,61 +2,42 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CustomerSupport from "../components/CustomerSupport";
-import { Bell, UploadCloud } from "lucide-react";
 import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-const regions = [
-  {
-    value: "asean",
-    label:
-      "ASEAN: Brunei, Campuchia, Indonesia, Lào, Malaysia, Myanmar (Burma), Philippines, Singapore, Thái Lan, Đông Timo.",
-  },
-  {
-    value: "asia",
-    label: "CHÂU Á: Các nước Châu Á, loại trừ Nhật Bản, Úc, New Zealand.",
-  },
-  {
-    value: "global",
-    label: "TOÀN CẦU: Các nước còn lại (bao gồm Nhật Bản, Úc, New Zealand).",
-  },
-];
-
-const insurancePrograms = {
-  A: {
-    benefits_vnd: 250000000,
-    benefits_usd: 9502,
-    benefits_eur: 8031,
-    fee: 50000,
-  },
-  B: {
-    benefits_vnd: 500000000,
-    benefits_usd: 19004,
-    benefits_eur: 16062,
-    fee: 75000,
-  },
-  C: {
-    benefits_vnd: 750000000,
-    benefits_usd: 28506,
-    benefits_eur: 24093,
-    fee: 100000,
-  },
-  D: {
-    benefits_vnd: 1250000000,
-    benefits_usd: 47510,
-    benefits_eur: 40155,
-    fee: 125000,
-  },
-  E: {
-    benefits_vnd: 2500000000,
-    benefits_usd: 95021,
-    benefits_eur: 80310,
-    fee: 150000,
-  },
-};
-
-type InsuranceProgramKey = keyof typeof insurancePrograms;
+// const insurancePrograms = {
+//   A: {
+//     benefits_vnd: 250000000,
+//     benefits_usd: 9502,
+//     benefits_eur: 8031,
+//     fee: 50000,
+//   },
+//   B: {
+//     benefits_vnd: 500000000,
+//     benefits_usd: 19004,
+//     benefits_eur: 16062,
+//     fee: 75000,
+//   },
+//   C: {
+//     benefits_vnd: 750000000,
+//     benefits_usd: 28506,
+//     benefits_eur: 24093,
+//     fee: 100000,
+//   },
+//   D: {
+//     benefits_vnd: 1250000000,
+//     benefits_usd: 47510,
+//     benefits_eur: 40155,
+//     fee: 125000,
+//   },
+//   E: {
+//     benefits_vnd: 2500000000,
+//     benefits_usd: 95021,
+//     benefits_eur: 80310,
+//     fee: 150000,
+//   },
+// };
 
 // 1. Thêm bảng phí chuẩn hóa
 const travelFeeTable = {
@@ -118,15 +99,6 @@ function getTravelInsuranceFee(
   return 0;
 }
 
-function formatDateToISOString(dateStr: string) {
-  if (!dateStr) return "";
-  const d = new Date(dateStr);
-  return d.toISOString().split(".")[0] + "Z";
-}
-
-const DOMESTIC_TRAVEL_PRODUCT_ID = 7; // Cập nhật đúng ID sản phẩm bảo hiểm du lịch trong nước nếu cần
-
-// Bảng phí bảo hiểm du lịch trong nước
 const domesticTravelFeeTable = [
   { amount: 10000000, fee: 1500 },
   { amount: 20000000, fee: 3000 },
@@ -138,22 +110,14 @@ const domesticTravelFeeTable = [
   { amount: 80000000, fee: 12000 },
   { amount: 90000000, fee: 13500 },
   { amount: 100000000, fee: 15000 },
-  { amount: 110000000, fee: 16500 },
-  { amount: 120000000, fee: 18000 },
-  { amount: 130000000, fee: 19500 },
-  { amount: 140000000, fee: 21000 },
-  { amount: 150000000, fee: 22500 },
-  { amount: 160000000, fee: 24000 },
-  { amount: 170000000, fee: 25500 },
-  { amount: 180000000, fee: 27000 },
-  { amount: 190000000, fee: 28500 },
-  { amount: 200000000, fee: 30000 },
 ];
 
 function getDomesticTravelFee(amount: number) {
   const found = domesticTravelFeeTable.find((row) => row.amount === amount);
   return found ? found.fee : 0;
 }
+
+const DOMESTIC_TRAVEL_PRODUCT_ID = 7; // Example product ID
 
 function toISOStringDate(dateStr: string) {
   if (!dateStr) return "";
@@ -171,8 +135,6 @@ function TravelDomesticInsuranceOrderPage() {
     itinerary: "",
   });
 
-  const [insuranceProgram, setInsuranceProgram] =
-    useState<InsuranceProgramKey>("A");
   const [participants, setParticipants] = useState([
     { fullName: "", gender: "", dob: "", idNumber: "" },
   ]);
@@ -197,7 +159,6 @@ function TravelDomesticInsuranceOrderPage() {
     phone: "",
     address: "",
   });
-  const [wantsInvoice, setWantsInvoice] = useState(false);
 
   const [totalFee, setTotalFee] = useState(0);
 
@@ -243,7 +204,7 @@ function TravelDomesticInsuranceOrderPage() {
   useEffect(() => {
     // Trang trong nước không có region, mặc định dùng 'asean' để tính phí
     const region = "asean";
-    const program = insuranceProgram;
+    const program = "A";
     const days = form.numberOfDays;
     const numPeople = participants.length || form.numberOfPeople;
 
@@ -270,7 +231,6 @@ function TravelDomesticInsuranceOrderPage() {
     const calculatedFee = feePerPerson * numPeople;
     setTotalFee(calculatedFee);
   }, [
-    insuranceProgram,
     form.numberOfDays,
     participants,
     form.numberOfPeople,

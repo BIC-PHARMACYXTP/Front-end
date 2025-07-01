@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CustomerSupport from "../components/CustomerSupport";
-import { Bell, UploadCloud } from "lucide-react";
 import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -143,12 +142,6 @@ function getTravelCareFee(
   return base + extraWeeks * extra;
 }
 
-function formatDateToISOString(dateStr: string) {
-  if (!dateStr) return "";
-  const d = new Date(dateStr);
-  return d.toISOString().split(".")[0] + "Z";
-}
-
 function TravelAccidentInsuranceOrderPage() {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
@@ -181,13 +174,6 @@ function TravelAccidentInsuranceOrderPage() {
     insuranceStartDate: "",
     invoice: false,
   });
-  const [accountInfo, setAccountInfo] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    address: "",
-  });
-  const [wantsInvoice, setWantsInvoice] = useState(false);
 
   const [totalFee, setTotalFee] = useState(0);
   const totalSteps = 3;
@@ -355,7 +341,6 @@ function TravelAccidentInsuranceOrderPage() {
           travelInvoicePayload
         );
         const invoice_id = invoiceRes.data.invoice_id;
-        const form_id = invoiceRes.data.form_id;
 
         // 2. Đăng ký khách hàng
         const customerRes = await axios.post(
@@ -427,20 +412,6 @@ function TravelAccidentInsuranceOrderPage() {
       [name]: value,
     };
     setParticipants(newParticipants);
-  };
-
-  const handleAccountInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setAccountInfo((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const copyBuyerToAccountInfo = () => {
-    setAccountInfo({
-      fullName: buyerInfo.fullName,
-      email: buyerInfo.email,
-      phone: buyerInfo.phone,
-      address: buyerInfo.address,
-    });
   };
 
   // Tạo mảng feeRows cho bảng tính phí
@@ -1011,8 +982,8 @@ function TravelAccidentInsuranceOrderPage() {
                           type="text"
                           name="address"
                           value={buyerInfo.address}
-                          onChange={handleBuyerInfoChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          onChange={e => handleCustomerInfoChange("address", e.target.value)}
+                          className={inputClassName}
                         />
                       </div>
                     </div>
@@ -1027,8 +998,8 @@ function TravelAccidentInsuranceOrderPage() {
                           type="email"
                           name="email"
                           value={buyerInfo.email}
-                          onChange={handleBuyerInfoChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          onChange={e => handleCustomerInfoChange("email", e.target.value)}
+                          className={inputClassName}
                         />
                       </div>
                     </div>
@@ -1043,8 +1014,8 @@ function TravelAccidentInsuranceOrderPage() {
                           type="tel"
                           name="phone"
                           value={buyerInfo.phone}
-                          onChange={handleBuyerInfoChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          onChange={e => handleCustomerInfoChange("phone", e.target.value)}
+                          className={inputClassName}
                         />
                       </div>
                     </div>
@@ -1148,7 +1119,23 @@ function TravelAccidentInsuranceOrderPage() {
                   <div className="space-y-6">
                     <button
                       type="button"
-                      onClick={copyBuyerToAccountInfo}
+                      onClick={() => {
+                        setBuyerInfo({
+                          type: "individual",
+                          isParticipant: false,
+                          fullName: "",
+                          phone: "",
+                          email: "",
+                          address: "",
+                          identityCard: "",
+                          companyName: "",
+                          taxCode: "",
+                          companyAddress: "",
+                          insuranceTerm: 1,
+                          insuranceStartDate: "",
+                          invoice: false,
+                        });
+                      }}
                       className="px-4 py-2 bg-gray-200 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-300 transition-colors"
                     >
                       Sao chép từ thông tin bên mua bảo hiểm
@@ -1211,10 +1198,7 @@ function TravelAccidentInsuranceOrderPage() {
                           type="text"
                           name="address"
                           value={buyerInfo.address}
-                          onChange={handleCustomerInfoChange(
-                            "address",
-                            (e) => e.target.value
-                          )}
+                          onChange={e => handleCustomerInfoChange("address", e.target.value)}
                           className={inputClassName}
                         />
                       </div>
@@ -1229,10 +1213,7 @@ function TravelAccidentInsuranceOrderPage() {
                           type="email"
                           name="email"
                           value={buyerInfo.email}
-                          onChange={handleCustomerInfoChange(
-                            "email",
-                            (e) => e.target.value
-                          )}
+                          onChange={e => handleCustomerInfoChange("email", e.target.value)}
                           className={inputClassName}
                         />
                       </div>
@@ -1247,10 +1228,7 @@ function TravelAccidentInsuranceOrderPage() {
                           type="tel"
                           name="phone"
                           value={buyerInfo.phone}
-                          onChange={handleCustomerInfoChange(
-                            "phone",
-                            (e) => e.target.value
-                          )}
+                          onChange={e => handleCustomerInfoChange("phone", e.target.value)}
                           className={inputClassName}
                         />
                       </div>

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CustomerSupport from "../components/CustomerSupport";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import feeTable from "../data/cancer_fee_table.json";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -43,69 +43,13 @@ interface CustomerInfo {
   insuranceStartDate: string;
 }
 
-interface InsurancePackage {
-  id: "basic" | "premium" | "plus" | "plus4";
-  name: string;
-  benefits: string[];
-  maxPayout: number;
-  annualPremium: number;
-}
-
-const INSURANCE_PACKAGES: InsurancePackage[] = [
-  {
-    id: "basic",
-    name: "Chương trình 1",
-    benefits: [
-      "Bảo hiểm ung thư giai đoạn đầu",
-      "Bảo hiểm ung thư giai đoạn muộn",
-      "Quyền lợi tử vong do ung thư",
-    ],
-    maxPayout: 200000000, // 200 triệu
-    annualPremium: 400000, // 400 nghìn/năm
-  },
-  {
-    id: "premium",
-    name: "Chương trình 2",
-    benefits: [
-      "Bảo hiểm ung thư giai đoạn đầu",
-      "Bảo hiểm ung thư giai đoạn muộn",
-      "Quyền lợi tử vong do ung thư",
-      "Trợ cấp nằm viện",
-      "Chi phí điều trị ngoại trú",
-    ],
-    maxPayout: 500000000, // 500 triệu
-    annualPremium: 800000, // 800 nghìn/năm
-  },
-  {
-    id: "plus",
-    name: "Chương trình 3",
-    benefits: [
-      "Bảo hiểm ung thư giai đoạn đầu",
-      "Bảo hiểm ung thư giai đoạn muộn",
-      "Quyền lợi tử vong do ung thư",
-      "Trợ cấp nằm viện",
-      "Chi phí điều trị ngoại trú",
-      "Quyền lợi điều trị tại nước ngoài",
-    ],
-    maxPayout: 1000000000, // 1 tỷ
-    annualPremium: 1600000, // 1.6 triệu/năm
-  },
-  {
-    id: "plus4",
-    name: "Chương trình 4",
-    benefits: [
-      "Bảo hiểm ung thư giai đoạn đầu",
-      "Bảo hiểm ung thư giai đoạn muộn",
-      "Quyền lợi tử vong do ung thư",
-      "Trợ cấp nằm viện",
-      "Chi phí điều trị ngoại trú",
-      "Quyền lợi điều trị tại nước ngoài",
-      "Quyền lợi y tế cao cấp",
-    ],
-    maxPayout: 1500000000, // 1.5 tỷ
-    annualPremium: 2000000, // 2 triệu/năm
-  },
-];
+// interface InsurancePackage {
+//   id: "basic" | "premium" | "plus" | "plus4";
+//   name: string;
+//   benefits: string[];
+//   maxPayout: number;
+//   annualPremium: number;
+// }
 
 const inputClassName =
   "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500";
@@ -114,13 +58,12 @@ const selectClassName =
 
 export default function CancerInsuranceOrderPage() {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentStep, setCurrentStep] = useState<number>(1);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [showError, setShowError] = useState(false);
-  const totalSteps = 3; // Changed from 2 to 3 to include payment step
+  const [showError, setShowError] = useState<boolean>(false);
+  const totalSteps = 3;
 
-  const [participantCount, setParticipantCount] = useState(1);
+  const [participantCount, setParticipantCount] = useState<number>(1);
   const [participants, setParticipants] = useState<ParticipantInfo[]>([
     {
       fullName: "",
@@ -157,13 +100,17 @@ export default function CancerInsuranceOrderPage() {
     insuranceStartDate: new Date().toISOString().split("T")[0],
   });
 
-  const [healthDeclaration, setHealthDeclaration] = useState({
+  const [healthDeclaration, setHealthDeclaration] = useState<{
+    cancer: string;
+    stroke: string;
+    otherConditions: string;
+  }>({
     cancer: "",
     stroke: "",
     otherConditions: "",
   });
 
-  const [contractType, setContractType] = useState("new");
+  const [contractType, setContractType] = useState<string>("new");
 
   const calculatePremium = (
     dateOfBirth: string,
@@ -183,15 +130,12 @@ export default function CancerInsuranceOrderPage() {
     ) {
       age--;
     }
-    // Giới hạn tuổi theo bảng
     if (age < 16 || age > 65) return 0;
-    // Xác định chương trình (1-4)
     let program = 1;
     if (packageId === "basic") program = 1;
     else if (packageId === "premium") program = 2;
     else if (packageId === "plus") program = 3;
     else if (packageId === "plus4") program = 4;
-    // Tra bảng phí
     const row = (feeTable as any[]).find(
       (item) =>
         item.age === age &&
@@ -199,49 +143,33 @@ export default function CancerInsuranceOrderPage() {
         item.program === program
     );
     let fee = row ? row.fee : 0;
-    // Cộng phụ phí nếu có quyền lợi bổ sung đột quỵ
     if (additionalBenefitOption === "yes") {
       if ((gender || "male") === "male") fee += Math.round(fee * 0.175);
       else fee += Math.round(fee * 0.125);
     }
-    // Nhân số năm (nếu có)
     if (term && term > 1) fee = fee * term;
     return fee;
   };
 
   const getTotalPremium = () => {
     return participants.reduce(
-      (sum, participant) => sum + participant.premium,
+      (sum, participant) => sum + (participant.premium || 0),
       0
     );
   };
 
   const handleNext = async () => {
-    console.log("=== handleNext called ===");
-    console.log("Current step:", currentStep);
-    console.log("Total steps:", totalSteps);
     setShowError(false);
     let currentStepErrors: { [key: string]: string } = {};
 
     try {
       if (currentStep === 1) {
-        console.log("Validating step 1...");
-        console.log("Participant count:", participantCount);
-        // Validate step 1
         if (participantCount < 1) {
           currentStepErrors.participantCount =
             "Vui lòng chọn số người tham gia từ 1 trở lên";
         }
       } else if (currentStep === 2) {
-        console.log("Validating step 2...");
-        console.log("Participants:", participants);
-        console.log("Customer info:", customerInfo);
-
-        // Validate participant info
         participants.forEach((participant, index) => {
-          console.log(`Validating participant ${index}:`, participant);
-
-          // Chỉ validate các trường bắt buộc
           if (!participant.fullName) {
             currentStepErrors[`participant${index}Name`] =
               "Vui lòng nhập họ và tên";
@@ -258,26 +186,22 @@ export default function CancerInsuranceOrderPage() {
             currentStepErrors[`participant${index}Package`] =
               "Vui lòng chọn Chương trình bảo hiểm";
           }
-
-          // Validate age
           const birthDate = new Date(participant.dateOfBirth);
           const today = new Date();
-          const age = today.getFullYear() - birthDate.getFullYear();
+          let age = today.getFullYear() - birthDate.getFullYear();
           const monthDiff = today.getMonth() - birthDate.getMonth();
-          const finalAge =
+          if (
             monthDiff < 0 ||
             (monthDiff === 0 && today.getDate() < birthDate.getDate())
-              ? age - 1
-              : age;
-
-          if (finalAge < 16 || finalAge > 60) {
+          ) {
+            age--;
+          }
+          if (age < 16 || age > 60) {
             currentStepErrors[`participant${index}Birth`] =
               "Độ tuổi tham gia bảo hiểm từ 16 đến 60 tuổi";
           }
         });
 
-        // Validate main customer info
-        console.log("Validating customer info...");
         if (!customerInfo.fullName) {
           currentStepErrors.customerName = "Vui lòng nhập họ và tên";
         }
@@ -295,7 +219,6 @@ export default function CancerInsuranceOrderPage() {
           currentStepErrors.customerAddress = "Vui lòng nhập địa chỉ";
         }
 
-        // Organization-specific validations
         if (customerInfo.type === "organization") {
           if (!customerInfo.companyName) {
             currentStepErrors.companyName = "Vui lòng nhập tên công ty";
@@ -311,66 +234,47 @@ export default function CancerInsuranceOrderPage() {
         }
       }
 
-      console.log("Validation errors:", currentStepErrors);
       if (Object.keys(currentStepErrors).length > 0) {
-        console.log("Found validation errors, setting errors state");
         setErrors(currentStepErrors);
         setShowError(true);
         return;
       }
 
-      console.log("No validation errors, proceeding to next step");
       setErrors({});
       window.scrollTo(0, 0);
 
       if (currentStep < totalSteps) {
-        console.log("Moving to next step:", currentStep + 1);
         setCurrentStep(currentStep + 1);
       } else if (currentStep === totalSteps) {
-        console.log("Reached final step, calling handleSubmit");
         await handleSubmit();
       }
     } catch (error) {
-      console.error("Error in handleNext:", error);
       setShowError(true);
     }
   };
 
   const handlePrevStep = () => {
-    console.log("=== handlePrevStep called ===");
-    console.log("Current step before:", currentStep);
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
       setShowError(false);
       setErrors({});
       window.scrollTo(0, 0);
-      console.log("Moving to previous step:", currentStep - 1);
-    } else {
-      console.log("Already at first step, cannot go back");
     }
   };
 
   const formatPhoneNumber = (value: string) => {
-    // Remove all non-digits
     const numbers = value.replace(/\D/g, "");
-
-    // Limit to 10 digits
     if (numbers.length > 10) {
       return numbers.slice(0, 10);
     }
-
     return numbers;
   };
 
   const formatIdentityCard = (value: string) => {
-    // Remove all non-digits
     const numbers = value.replace(/\D/g, "");
-
-    // Limit to 12 digits (for CCCD) or 9 digits (for CMND)
     if (numbers.length > 12) {
       return numbers.slice(0, 12);
     }
-
     return numbers;
   };
 
@@ -379,35 +283,23 @@ export default function CancerInsuranceOrderPage() {
     field: keyof ParticipantInfo,
     value: string | number
   ) => {
-    console.log(
-      `=== handleParticipantChange called for participant ${index} ===`
-    );
-    console.log("Field:", field);
-    console.log("Value:", value);
     const newParticipants = [...participants];
-
-    // Format input values
     let formattedValue = value;
     if (field === "phoneNumber") {
       formattedValue = formatPhoneNumber(value as string);
     } else if (field === "identityCard") {
       formattedValue = formatIdentityCard(value as string);
     }
-
-    // Update the field
     newParticipants[index] = {
       ...newParticipants[index],
       [field]: formattedValue,
     };
-
-    // Recalculate premium if relevant fields change
     if (
       field === "package" ||
       field === "insuranceTerm" ||
       field === "dateOfBirth" ||
       field === "additionalBenefitOption"
     ) {
-      console.log("Recalculating premium for participant", index);
       const participant = newParticipants[index];
       if (
         participant.dateOfBirth &&
@@ -421,22 +313,14 @@ export default function CancerInsuranceOrderPage() {
           participant.gender,
           participant.additionalBenefitOption
         );
-        console.log("New premium calculated:", premium);
         newParticipants[index].premium = premium;
       }
     }
-
-    console.log("Updated participant:", newParticipants[index]);
     setParticipants(newParticipants);
   };
 
   const handleCustomerInfoChange = (field: keyof CustomerInfo, value: any) => {
-    console.log("=== handleCustomerInfoChange called ===");
-    console.log("Field:", field);
-    console.log("Value:", value);
     let formattedValue = value;
-
-    // Format input values
     if (field === "phone") {
       formattedValue = formatPhoneNumber(value);
     } else if (field === "identityCard") {
@@ -444,23 +328,16 @@ export default function CancerInsuranceOrderPage() {
     } else if (field === "taxCode") {
       formattedValue = value.replace(/\D/g, "").slice(0, 13);
     }
-
-    console.log("Formatted value:", formattedValue);
-    setCustomerInfo((prev) => {
-      const newInfo = {
-        ...prev,
-        [field]: formattedValue,
-      };
-      console.log("Updated customer info:", newInfo);
-      return newInfo;
-    });
+    setCustomerInfo((prev) => ({
+      ...prev,
+      [field]: formattedValue,
+    }));
   };
 
   const handleSubmit = async () => {
     try {
-      setIsSubmitting(true);
+      window.scrollTo(0, 0);
 
-      // 1. Tạo invoice
       const invoiceResponse = await axios.post(
         `${API_URL}/api/insurance_cancer/create_invoice`,
         {
@@ -471,8 +348,7 @@ export default function CancerInsuranceOrderPage() {
       );
       const invoiceId = invoiceResponse.data.invoice_id;
 
-      // 2. Tạo participant (người tham gia)
-      let formId = null;
+      let formId: string | null = null;
       for (const participant of participants) {
         const payload = {
           cmnd_img: "",
@@ -500,7 +376,6 @@ export default function CancerInsuranceOrderPage() {
           formId = participantRes.data.form_id;
       }
 
-      // 3. Tạo customer
       const customerRes = await axios.post(
         `${API_URL}/api/insurance_cancer/create_customer_registration`,
         {
@@ -517,7 +392,6 @@ export default function CancerInsuranceOrderPage() {
       );
       const customerId = customerRes.data.customer_id;
 
-      // 4. Xác nhận mua hàng
       await axios.post(`${API_URL}/api/insurance_cancer/confirm_purchase`, {
         invoice_id: invoiceId,
         customer_id: customerId,
@@ -526,36 +400,23 @@ export default function CancerInsuranceOrderPage() {
       });
 
       navigate("/gio-hang.html");
-    } catch (error) {
+    } catch (error: any) {
       setShowError(true);
-      console.error("Error submitting form:", error);
-      let axiosError: AxiosError | null = null;
-      if (error instanceof AxiosError) {
-        axiosError = error;
-      } else if (
-        typeof error === "object" &&
-        error !== null &&
-        "isAxiosError" in error
-      ) {
-        axiosError = error as AxiosError;
-      }
-      if (axiosError && axiosError.response && axiosError.response.data) {
-        alert("Lỗi backend: " + JSON.stringify(axiosError.response.data));
-        console.log("Lỗi backend chi tiết:", axiosError.response.data);
+      let errorMsg =
+        "Có lỗi xảy ra khi xử lý đơn hàng. Vui lòng thử lại sau hoặc liên hệ hỗ trợ.";
+      if (error && error.response && error.response.data) {
+        alert("Lỗi backend: " + JSON.stringify(error.response.data));
+        errorMsg = error.response.data?.message || errorMsg;
       }
       setErrors({
-        submit:
-          "Có lỗi xảy ra khi xử lý đơn hàng. Vui lòng thử lại sau hoặc liên hệ hỗ trợ.",
+        submit: errorMsg,
       });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   const handleParticipantCountChange = (value: number) => {
     setParticipantCount(value);
     if (value > participants.length) {
-      // Add new participants
       const newParticipants = [...participants];
       for (let i = participants.length; i < value; i++) {
         newParticipants.push({
@@ -575,7 +436,6 @@ export default function CancerInsuranceOrderPage() {
       }
       setParticipants(newParticipants);
     } else if (value < participants.length) {
-      // Remove excess participants
       setParticipants(participants.slice(0, value));
     }
   };
@@ -588,7 +448,6 @@ export default function CancerInsuranceOrderPage() {
             Thông tin
           </h3>
           <div className="space-y-6">
-            {/* Đối tượng được bảo hiểm */}
             <div className="grid grid-cols-12 items-center mb-4">
               <label className="col-span-4 text-left pr-4 text-lg font-medium text-gray-700">
                 Đối tượng được bảo hiểm <span className="text-red-600">*</span>
@@ -624,7 +483,6 @@ export default function CancerInsuranceOrderPage() {
                 )}
               </div>
             </div>
-            {/* Số người tham gia BH */}
             <div className="grid grid-cols-12 items-center mb-4">
               <label className="col-span-4 text-left pr-4 text-lg font-medium text-gray-700">
                 Số người tham gia BH <span className="text-red-600">*</span>
@@ -649,7 +507,6 @@ export default function CancerInsuranceOrderPage() {
               </div>
             </div>
           </div>
-          {/* Chú ý */}
           <div className="mt-6 p-4 bg-red-50 border-l-4 border-red-400 rounded">
             <div className="font-semibold text-red-600 mb-2 text-left">
               <span className="mr-2">⚠️</span>CHÚ Ý NẾU QUÝ KHÁCH MUA LẦN ĐẦU
@@ -694,8 +551,6 @@ export default function CancerInsuranceOrderPage() {
           <h3 className="text-3xl font-semibold text-left mb-6 text-red-600">
             Thông tin người tham gia bảo hiểm
           </h3>
-
-          {/* Table header */}
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
@@ -878,7 +733,10 @@ export default function CancerInsuranceOrderPage() {
                     </td>
                     <td className="p-2 text-center">
                       <span className="text-base">
-                        {participant.premium.toLocaleString("vi-VN")} VNĐ
+                        {participant.premium
+                          ? participant.premium.toLocaleString("vi-VN")
+                          : 0}{" "}
+                        VNĐ
                       </span>
                     </td>
                   </tr>
@@ -886,23 +744,18 @@ export default function CancerInsuranceOrderPage() {
               </tbody>
             </table>
           </div>
-
-          {/* Tổng phí bảo hiểm cho tất cả người tham gia */}
           <div className="flex justify-end mt-4">
             <span className="text-xl font-bold mr-2">Tổng phí bảo hiểm:</span>
             <span className="text-xl font-bold text-red-600">
               {getTotalPremium().toLocaleString("vi-VN")} VNĐ
             </span>
           </div>
-
-          {/* Health declaration section */}
           <div className="mt-8 text-left">
             <p className="text-base text-gray-600 mb-4">
               Trước khi tham gia bảo hiểm theo Hợp đồng bảo hiểm này, Người được
               bảo hiểm đã từng được bất kỳ cơ sở y tế hay nhân viên y tế nào xác
               định:
             </p>
-
             <div className="space-y-4">
               <div className="flex items-center gap-4">
                 <span className="flex-1 text-left">Mắc bệnh ung thư:</span>
@@ -941,7 +794,6 @@ export default function CancerInsuranceOrderPage() {
                   </label>
                 </div>
               </div>
-
               <div className="flex items-center gap-4">
                 <span className="flex-1 text-left">Đã từng bị đột quỵ:</span>
                 <div className="flex items-center gap-4">
@@ -979,7 +831,6 @@ export default function CancerInsuranceOrderPage() {
                   </label>
                 </div>
               </div>
-
               <div className="flex items-center gap-4">
                 <span className="flex-1 text-left">
                   Bị suy thận mạn giai đoạn 4 trở lên; hoặc bị biến chứng của
@@ -1022,7 +873,6 @@ export default function CancerInsuranceOrderPage() {
                 </div>
               </div>
             </div>
-
             {hasHealthIssues && (
               <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-md">
                 <p className="text-3xl text-red-600 font-semibold text-left">
@@ -1031,17 +881,13 @@ export default function CancerInsuranceOrderPage() {
                 </p>
               </div>
             )}
-
             <p className="text-sm text-gray-500 mt-4 text-left">
               (Ngày sinh nhập đúng định dạng: ngày/tháng/năm, độ tuổi: nhập đúng
               tuổi từ 16 đến 60 tuổi)
             </p>
           </div>
-
-          {/* Disable form continuation if there are health issues */}
           {!hasHealthIssues && (
             <>
-              {/* Người thụ hưởng bảo hiểm section */}
               <div className="mt-8">
                 <h3 className="text-3xl font-semibold text-left mb-4 text-red-600">
                   Người thụ hưởng bảo hiểm/ Người chỉ định nhận bảo hiểm
@@ -1051,15 +897,11 @@ export default function CancerInsuranceOrderPage() {
                   bảo hiểm (nếu có)
                 </p>
               </div>
-
-              {/* Thông tin Bên mua bảo hiểm section */}
               <div className="mt-8">
                 <h3 className="text-3xl font-semibold text-left mb-6 text-red-600">
                   Thông tin Bên mua bảo hiểm
                 </h3>
-
                 <div className="space-y-6">
-                  {/* Loại người mua */}
                   <div className="flex items-center gap-8">
                     <label className="text-lg font-medium text-gray-700 min-w-[200px] flex justify-start">
                       Người mua <span className="text-red-600">*</span>
@@ -1077,8 +919,6 @@ export default function CancerInsuranceOrderPage() {
                       </select>
                     </div>
                   </div>
-
-                  {/* CMND/CCCD */}
                   <div className="flex items-center gap-8">
                     <label className="text-lg font-medium text-gray-700 min-w-[200px] flex justify-start">
                       {customerInfo.type === "organization"
@@ -1105,8 +945,6 @@ export default function CancerInsuranceOrderPage() {
                       />
                     </div>
                   </div>
-
-                  {/* Họ và tên */}
                   <div className="flex items-center gap-8">
                     <label className="text-lg font-medium text-gray-700 min-w-[200px] flex justify-start">
                       {customerInfo.type === "organization"
@@ -1130,8 +968,6 @@ export default function CancerInsuranceOrderPage() {
                       />
                     </div>
                   </div>
-
-                  {/* Địa chỉ */}
                   <div className="flex items-center gap-8">
                     <label className="text-lg font-medium text-gray-700 min-w-[200px] flex justify-start">
                       Địa chỉ <span className="text-red-600">*</span>
@@ -1153,8 +989,6 @@ export default function CancerInsuranceOrderPage() {
                       )}
                     </div>
                   </div>
-
-                  {/* Email */}
                   <div className="flex items-center gap-8">
                     <label className="text-lg font-medium text-gray-700 min-w-[200px] flex justify-start">
                       Email nhận thông báo{" "}
@@ -1177,8 +1011,6 @@ export default function CancerInsuranceOrderPage() {
                       )}
                     </div>
                   </div>
-
-                  {/* Số điện thoại */}
                   <div className="flex items-center gap-8">
                     <label className="text-lg font-medium text-gray-700 min-w-[200px] flex justify-start">
                       Số điện thoại di động{" "}
@@ -1201,8 +1033,6 @@ export default function CancerInsuranceOrderPage() {
                       )}
                     </div>
                   </div>
-
-                  {/* Thời hạn bảo hiểm */}
                   <div className="flex items-center gap-8">
                     <label className="text-lg font-medium text-gray-700 min-w-[200px] flex justify-start">
                       Thời hạn bảo hiểm <span className="text-red-600">*</span>
@@ -1224,8 +1054,6 @@ export default function CancerInsuranceOrderPage() {
                       </select>
                     </div>
                   </div>
-
-                  {/* Ngày bắt đầu bảo hiểm */}
                   <div className="flex items-center gap-8">
                     <label className="text-lg font-medium text-gray-700 min-w-[200px] flex justify-start">
                       Ngày bắt đầu bảo hiểm{" "}
@@ -1251,8 +1079,6 @@ export default function CancerInsuranceOrderPage() {
             </>
           )}
         </div>
-
-        {/* Navigation buttons */}
         <div className="flex justify-between mt-8">
           <button
             type="button"
@@ -1280,9 +1106,7 @@ export default function CancerInsuranceOrderPage() {
           <h3 className="text-3xl font-semibold text-left mb-6 text-red-600">
             Thông tin tài khoản
           </h3>
-
           <div className="space-y-6">
-            {/* Sao chép từ thông tin bên mua bảo hiểm */}
             <div className="flex items-center gap-8">
               <label className="text-lg font-medium text-gray-700 min-w-[200px] flex justify-start">
                 Sao chép từ thông tin bên mua bảo hiểm
@@ -1306,8 +1130,6 @@ export default function CancerInsuranceOrderPage() {
                 </button>
               </div>
             </div>
-
-            {/* Họ và tên */}
             <div className="flex items-center gap-8">
               <label className="text-lg font-medium text-gray-700 min-w-[200px] flex justify-start">
                 Họ và tên <span className="text-red-600">*</span>
@@ -1326,8 +1148,6 @@ export default function CancerInsuranceOrderPage() {
                 )}
               </div>
             </div>
-
-            {/* Địa chỉ */}
             <div className="flex items-center gap-8">
               <label className="text-lg font-medium text-gray-700 min-w-[200px] flex justify-start">
                 Địa chỉ <span className="text-red-600">*</span>
@@ -1346,8 +1166,6 @@ export default function CancerInsuranceOrderPage() {
                 )}
               </div>
             </div>
-
-            {/* Email nhận thông báo */}
             <div className="flex items-center gap-8">
               <label className="text-lg font-medium text-gray-700 min-w-[200px] flex justify-start">
                 Email nhận thông báo <span className="text-red-600">*</span>
@@ -1366,8 +1184,6 @@ export default function CancerInsuranceOrderPage() {
                 )}
               </div>
             </div>
-
-            {/* Số điện thoại di động */}
             <div className="flex items-center gap-8">
               <label className="text-lg font-medium text-gray-700 min-w-[200px] flex justify-start">
                 Số điện thoại di động <span className="text-red-600">*</span>
@@ -1386,8 +1202,6 @@ export default function CancerInsuranceOrderPage() {
                 )}
               </div>
             </div>
-
-            {/* Hình thức giao nhận */}
             <div className="border-t pt-6 mt-8">
               <h4 className="text-lg font-medium mb-4">Hình thức giao nhận</h4>
               <div className="bg-white p-4 rounded-md">
@@ -1398,8 +1212,6 @@ export default function CancerInsuranceOrderPage() {
                 </p>
               </div>
             </div>
-
-            {/* Thời điểm giao nhận */}
             <div className="border-t pt-6 mt-8">
               <h4 className="text-lg font-medium mb-4">Thời điểm giao nhận</h4>
               <div className="bg-white p-4 rounded-md">
@@ -1408,8 +1220,6 @@ export default function CancerInsuranceOrderPage() {
                 </p>
               </div>
             </div>
-
-            {/* Xuất hóa đơn */}
             <div className="border-t pt-6 mt-8">
               <h4 className="text-lg font-medium mb-4">Xuất hóa đơn</h4>
               <div className="flex gap-4">
@@ -1447,8 +1257,6 @@ export default function CancerInsuranceOrderPage() {
             </div>
           </div>
         </div>
-
-        {/* Nút điều hướng */}
         <div className="flex justify-between mt-8">
           <button
             type="button"
@@ -1472,7 +1280,6 @@ export default function CancerInsuranceOrderPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      {/* Banner */}
       <div className="w-full pt-[84px]">
         <img
           src="/products/banner-cancer.png"
@@ -1481,10 +1288,8 @@ export default function CancerInsuranceOrderPage() {
         />
       </div>
       <div className="max-w-[1200px] mx-auto p-6 bg-white rounded-lg shadow-md">
-        {/* Progress steps */}
         <div className="flex items-center justify-center gap-4 mb-12">
           <div className="flex items-center">
-            {/* Icon Thông tin chung */}
             <div className="flex flex-col items-center">
               <div
                 className={`w-24 h-24 rounded-full flex items-center justify-center mb-2 ${
@@ -1505,10 +1310,7 @@ export default function CancerInsuranceOrderPage() {
                 Thông tin chung
               </span>
             </div>
-
             <div className="w-32 h-[2px] bg-gray-300 mx-4"></div>
-
-            {/* Icon Thông tin người tham gia */}
             <div className="flex flex-col items-center">
               <div
                 className={`w-24 h-24 rounded-full flex items-center justify-center mb-2 ${
@@ -1529,10 +1331,7 @@ export default function CancerInsuranceOrderPage() {
                 Thông tin người tham gia
               </span>
             </div>
-
             <div className="w-32 h-[2px] bg-gray-300 mx-4"></div>
-
-            {/* Icon Thanh toán */}
             <div className="flex flex-col items-center">
               <div
                 className={`w-24 h-24 rounded-full flex items-center justify-center mb-2 ${
@@ -1555,8 +1354,6 @@ export default function CancerInsuranceOrderPage() {
             </div>
           </div>
         </div>
-
-        {/* General error display */}
         {showError && errors.submit && (
           <div className="max-w-2xl mx-auto mb-6">
             <div className="bg-red-50 border border-red-200 rounded-md p-4">
@@ -1564,8 +1361,6 @@ export default function CancerInsuranceOrderPage() {
             </div>
           </div>
         )}
-
-        {/* Render step content */}
         <div key={currentStep}>
           {currentStep === 1 && renderStep1Content()}
           {currentStep === 2 && renderStep2Content()}
