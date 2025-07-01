@@ -75,7 +75,7 @@ const calcFee = (num: number, amount: number) => {
   }
 };
 
-const ElectricityAccidentInsuranceOrderPage: React.FC = () => {
+const CyberInsuranceOrderPage: React.FC = () => {
   const [step, setStep] = useState(1);
   const [numPeople, setNumPeople] = useState("");
   const [amount, setAmount] = useState<number | null>(null);
@@ -98,9 +98,12 @@ const ElectricityAccidentInsuranceOrderPage: React.FC = () => {
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [insuranceStart, setInsuranceStart] = useState("");
   const [insuranceDuration, setInsuranceDuration] = useState(12);
+  const [hasOtherCyberInsurance, setHasOtherCyberInsurance] = useState(false);
+  const [otherCyberInsuranceCompany, setOtherCyberInsuranceCompany] =
+    useState("");
 
   const selectedOption = insuranceOptions.find((opt) => opt.value === amount);
-  const fee = calcFee(Number(numPeople), amount || 0);
+  const fee = Number(numPeople) * 184000;
   const discount = 0;
   const total = fee - discount;
 
@@ -152,10 +155,7 @@ const ElectricityAccidentInsuranceOrderPage: React.FC = () => {
 
   const handleNext = () => {
     if (step === 1) {
-      if (!numPeople || !amount || !!error) return;
-    }
-    if (step === 2) {
-      // Có thể kiểm tra validate participants ở đây nếu muốn
+      if (!numPeople || !!error) return;
     }
     setStep((s) => s + 1);
     window.scrollTo(0, 0);
@@ -178,7 +178,7 @@ const ElectricityAccidentInsuranceOrderPage: React.FC = () => {
       endDate.setMonth(endDate.getMonth() + insuranceDuration);
 
       const invoice = {
-        product_id: 10,
+        product_id: 13,
         InsuranceAmount: amount,
         InsuranceQuantity: Number(numPeople),
         InsuranceStart: startDate.toISOString(), // RFC3339 format
@@ -276,95 +276,37 @@ const ElectricityAccidentInsuranceOrderPage: React.FC = () => {
           <div className="max-w-5xl mx-auto">
             {step === 1 && (
               <>
-                {/* Form thông tin & phí */}
-                <div className="bg-[#ededed] rounded-2xl shadow-lg p-8 mb-8 text-left max-w-5xl mx-auto">
+                {/* Box Thông tin chuẩn như ảnh */}
+                <div className="bg-[#ededed] rounded-2xl shadow-lg p-8 mb-8 max-w-5xl mx-auto">
                   <h2 className="text-2xl font-bold text-red-600 mb-4 text-left">
                     Thông tin
                   </h2>
-                  <div className="flex items-center mb-4">
-                    <label className="block text-base text-gray-800 w-1/3 whitespace-nowrap">
-                      Số người tham gia bảo hiểm{" "}
+                  <div className="border-t border-gray-300 mb-6"></div>
+                  {/* Số người tham gia */}
+                  <div className="flex items-center mb-6">
+                    <label className="block text-lg font-medium text-gray-800 min-w-[220px] text-left">
+                      Số người tham gia BH{" "}
                       <span className="text-red-500">*</span>
                     </label>
-                    <div className="w-2/3">
-                      <input
-                        type="number"
-                        min={1}
-                        max={100}
-                        value={numPeople}
-                        onChange={handleNumPeopleChange}
-                        className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 text-left text-base"
-                        placeholder="Nhập số người tham gia (<= 100)"
-                      />
-                      {error && (
-                        <div className="text-red-500 text-sm mt-1 text-left">
-                          {error}
-                        </div>
-                      )}
-                    </div>
+                    <input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={numPeople}
+                      onChange={handleNumPeopleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 text-base"
+                      placeholder="Nhập số người tham gia (<= 100)"
+                    />
                   </div>
-                  <div className="flex items-center mb-4">
-                    <label className="block text-base text-gray-800 w-1/3 whitespace-nowrap">
-                      Số tiền bảo hiểm (/người){" "}
-                      <span className="text-red-500">*</span>
+                  {/* Phạm vi địa lý */}
+                  <div className="flex items-center">
+                    <label className="block text-lg font-medium text-gray-800 min-w-[220px] text-left">
+                      Phạm vi địa lý
                     </label>
-                    <div className="w-2/3">
-                      <select
-                        className="w-full border rounded px-3 py-2 text-left text-base"
-                        value={amount || ""}
-                        onChange={(e) =>
-                          setAmount(Number(e.target.value) || null)
-                        }
-                      >
-                        <option value="">-- Chọn số tiền BH --</option>
-                        {insuranceOptions.map((opt) => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                  <div className="mb-2 text-left">
-                    <span className="font-bold text-gray-800 text-base text-left">
-                      Quyền lợi bảo hiểm
-                    </span>
-                  </div>
-                  <div className="bg-white border rounded px-4 py-3 text-sm text-left text-base">
-                    <div className="flex items-center border-b pb-2 mb-2">
-                      <div className="font-semibold text-gray-700 w-1/3 whitespace-nowrap text-base">
-                        Số tiền bảo hiểm:
-                      </div>
-                      <div className="w-2/3 text-base">
-                        {selectedOption
-                          ? selectedOption.benefit.soTien
-                          : "0 VNĐ"}
-                      </div>
-                    </div>
-                    <div className="flex items-center border-b pb-2 mb-2">
-                      <div className="font-semibold text-gray-700 w-1/3 whitespace-nowrap text-base">
-                        Thương tật vĩnh viễn do tai nạn:
-                      </div>
-                      <div className="w-2/3 text-base">
-                        {selectedOption
-                          ? selectedOption.benefit.thuongTatVV
-                          : "Theo Bảng tỉ lệ trả tiền thương tật"}
-                      </div>
-                    </div>
-                    <div className="flex items-start">
-                      <div className="font-semibold text-gray-700 w-1/3 whitespace-nowrap pt-1 text-base">
-                        Thương tật tạm thời:
-                      </div>
-                      <div className="w-2/3 whitespace-pre-line text-base">
-                        {selectedOption
-                          ? selectedOption.benefit.thuongTatTT
-                          : "Nếu STBH <= 20 triệu: Theo Bảng tỉ lệ trả tiền thương tật\nNếu STBH > 20 triệu: Theo chi phí thực tế, không quá vết thương theo Bảng tỉ lệ trả tiền thương tật"}
-                      </div>
-                    </div>
+                    <div className="text-base">Toàn thế giới</div>
                   </div>
                 </div>
-
-                {/* Phí */}
+                {/* Box tính phí bảo hiểm */}
                 <div className="bg-white rounded-2xl shadow-lg p-6 text-left mt-8 mb-8 max-w-5xl mx-auto">
                   <p className="text-lg">
                     Tổng phí (miễn VAT):{" "}
@@ -393,7 +335,7 @@ const ElectricityAccidentInsuranceOrderPage: React.FC = () => {
               <div className="space-y-8">
                 {/* Danh sách người tham gia bảo hiểm */}
                 <div className="bg-white rounded-2xl shadow-lg p-6">
-                  <h2 className="text-2xl font-bold mb-4 text-red-600 text-left">
+                  <h2 className="text-2xl font-bold mb-4 text-red-600">
                     Danh sách người tham gia bảo hiểm
                   </h2>
                   {/* Table Header */}
@@ -475,6 +417,49 @@ const ElectricityAccidentInsuranceOrderPage: React.FC = () => {
                     (Đối với trẻ em chưa có CMND/CCCD thì quý khách vui lòng
                     nhập số CMND/CCCD của bố hoặc mẹ)
                   </p>
+                </div>
+                {/* Thông tin đã từng tham gia bảo hiểm an ninh mạng ở công ty khác */}
+                <div className="bg-[#ededed] rounded-2xl shadow-lg p-6">
+                  <div className="grid grid-cols-[450px_1fr] gap-y-4">
+                    <label className="block text-base font-medium text-gray-800 text-left col-span-1 self-center">
+                      NĐBH đã tham gia BH An ninh mạng tại Công ty BH khác?
+                    </label>
+                    <div className="flex items-center gap-4 col-span-1 justify-start">
+                      <label className="inline-flex items-center">
+                        <input
+                          type="radio"
+                          name="hasOtherCyberInsurance"
+                          checked={hasOtherCyberInsurance === true}
+                          onChange={() => setHasOtherCyberInsurance(true)}
+                          className="form-radio h-4 w-4 text-red-600"
+                        />
+                        <span className="ml-2">Có</span>
+                      </label>
+                      <label className="inline-flex items-center">
+                        <input
+                          type="radio"
+                          name="hasOtherCyberInsurance"
+                          checked={hasOtherCyberInsurance === false}
+                          onChange={() => setHasOtherCyberInsurance(false)}
+                          className="form-radio h-4 w-4 text-red-600"
+                        />
+                        <span className="ml-2">Không</span>
+                      </label>
+                    </div>
+                    <label className="block text-base font-medium text-gray-800 text-left col-span-1 self-center">
+                      Tên công ty bảo hiểm đã tham gia
+                    </label>
+                    <input
+                      type="text"
+                      value={otherCyberInsuranceCompany}
+                      onChange={(e) =>
+                        setOtherCyberInsuranceCompany(e.target.value)
+                      }
+                      className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 text-base col-span-1"
+                      disabled={!hasOtherCyberInsurance}
+                      placeholder="Nhập tên công ty nếu có"
+                    />
+                  </div>
                 </div>
                 {/* Thông tin Bên mua bảo hiểm */}
                 <div className="bg-[#F4F6F8] p-6 rounded-lg">
@@ -845,7 +830,7 @@ const ElectricityAccidentInsuranceOrderPage: React.FC = () => {
                 <button
                   className="px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
                   onClick={handleNext}
-                  disabled={step === 1 && (!numPeople || !amount || !!error)}
+                  disabled={step === 1 && (!numPeople || !!error)}
                 >
                   Tiếp tục
                 </button>
@@ -885,4 +870,4 @@ const ElectricityAccidentInsuranceOrderPage: React.FC = () => {
   );
 };
 
-export default ElectricityAccidentInsuranceOrderPage;
+export default CyberInsuranceOrderPage;

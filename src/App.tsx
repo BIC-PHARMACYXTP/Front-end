@@ -57,50 +57,6 @@ const AppRoutes = () => {
       <Route path="/tin-tuc" element={<NewsPage />} />
       <Route path="/khuyen-mai" element={<PromotionsPage />} />
       <Route path="/san-pham" element={<ProductsPage />} />
-      <Route path="/san-pham/:category" element={<ProductsPage />} />
-      <Route path="/danh-muc/:category" element={<ProductsPage />} />
-      <Route path="/danh-muc/:category.html" element={<ProductsPage />} />
-      <Route path="/nhap-thong-tin.html" element={<OrderPage />} />
-      <Route
-        path="/mua-bao-hiem/:category/:productId"
-        element={<InsuranceOrderRouter />}
-      />
-      <Route
-        path="/mua-bao-hiem/:productId"
-        element={<InsuranceOrderRouter />}
-      />
-      <Route path="/mua-ngay/:productType" element={<InsuranceOrderRouter />} />
-      <Route path="/gio-hang.html" element={<CartPage />} />
-
-      {/* Các route cụ thể cho từng sản phẩm */}
-      <Route
-        path="/bao-hiem-trach-nhiem-dan-su-chu-xe-o-to-9.html"
-        element={
-          <ProductDetailPage productSlug="bao-hiem-trach-nhiem-dan-su-chu-xe-o-to" />
-        }
-      />
-      <Route
-        path="/bao-hiem-vat-chat-o-to-10.html"
-        element={<ProductDetailPage productSlug="bao-hiem-vat-chat-o-to" />}
-      />
-      <Route
-        path="/bao-hiem-tnds-xe-may-11.html"
-        element={<ProductDetailPage productSlug="bao-hiem-tnds-xe-may" />}
-      />
-      <Route
-        path="/bao-hiem-suc-khoe-ca-nhan-12.html"
-        element={<ProductDetailPage productSlug="bao-hiem-suc-khoe-ca-nhan" />}
-      />
-      <Route
-        path="/bao-hiem-du-lich-quoc-te-13.html"
-        element={<ProductDetailPage productSlug="bao-hiem-du-lich-quoc-te" />}
-      />
-      <Route
-        path="/bao-hiem-tai-nan-24h-14.html"
-        element={<ProductDetailPage productSlug="bao-hiem-tai-nan-24h" />}
-      />
-
-      {/* Thêm các routes mới cho đường dẫn sản phẩm mới */}
       <Route
         path="/san-pham/bao-hiem-trach-nhiem-dan-su-chu-xe-o-to"
         element={
@@ -146,6 +102,16 @@ const AppRoutes = () => {
         element={<ProductDetailPage productSlug="bao-hiem-tai-nan-24-24" />}
       />
       <Route
+        path="/san-pham/bao-hiem-tai-nan-nguoi-su-dung-dien"
+        element={
+          <ProductDetailPage productSlug="bao-hiem-tai-nan-nguoi-su-dung-dien" />
+        }
+      />
+      <Route
+        path="/san-pham/bao-hiem-tai-nan-mo-rong"
+        element={<ProductDetailPage productSlug="bao-hiem-tai-nan-mo-rong" />}
+      />
+      <Route
         path="/san-pham/bao-hiem-toan-dien-nha-tu-nhan"
         element={
           <ProductDetailPage productSlug="bao-hiem-toan-dien-nha-tu-nhan" />
@@ -154,6 +120,48 @@ const AppRoutes = () => {
       <Route
         path="/san-pham/bao-hiem-an-ninh-mang"
         element={<ProductDetailPage productSlug="bao-hiem-an-ninh-mang" />}
+      />
+      <Route path="/san-pham/:category" element={<ProductsPage />} />
+      <Route path="/danh-muc/:category" element={<ProductsPage />} />
+      <Route path="/danh-muc/:category.html" element={<ProductsPage />} />
+      <Route path="/nhap-thong-tin.html" element={<OrderPage />} />
+      <Route
+        path="/mua-bao-hiem/:category/:productId"
+        element={<InsuranceOrderRouter />}
+      />
+      <Route
+        path="/mua-bao-hiem/:productId"
+        element={<InsuranceOrderRouter />}
+      />
+      <Route path="/mua-ngay/:productType" element={<InsuranceOrderRouter />} />
+      <Route path="/gio-hang.html" element={<CartPage />} />
+
+      {/* Các route cụ thể cho từng sản phẩm */}
+      <Route
+        path="/bao-hiem-trach-nhiem-dan-su-chu-xe-o-to-9.html"
+        element={
+          <ProductDetailPage productSlug="bao-hiem-trach-nhiem-dan-su-chu-xe-o-to" />
+        }
+      />
+      <Route
+        path="/bao-hiem-vat-chat-o-to-10.html"
+        element={<ProductDetailPage productSlug="bao-hiem-vat-chat-o-to" />}
+      />
+      <Route
+        path="/bao-hiem-tnds-xe-may-11.html"
+        element={<ProductDetailPage productSlug="bao-hiem-tnds-xe-may" />}
+      />
+      <Route
+        path="/bao-hiem-suc-khoe-ca-nhan-12.html"
+        element={<ProductDetailPage productSlug="bao-hiem-suc-khoe-ca-nhan" />}
+      />
+      <Route
+        path="/bao-hiem-du-lich-quoc-te-13.html"
+        element={<ProductDetailPage productSlug="bao-hiem-du-lich-quoc-te" />}
+      />
+      <Route
+        path="/bao-hiem-tai-nan-24h-14.html"
+        element={<ProductDetailPage productSlug="bao-hiem-tai-nan-24h" />}
       />
 
       {/* Admin routes */}
@@ -166,6 +174,15 @@ const AppRoutes = () => {
         <Route path="comments" element={<Comments />} />
         <Route path="statistics" element={<Statistics />} />
       </Route>
+
+      <Route
+        path="/mua-bao-hiem/bao-hiem-an-ninh-mang"
+        element={<InsuranceOrderRouter />}
+      />
+      <Route
+        path="/mua-ngay/bao-hiem-an-ninh-mang"
+        element={<InsuranceOrderRouter />}
+      />
     </Routes>
   );
 };

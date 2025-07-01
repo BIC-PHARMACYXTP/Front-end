@@ -11,9 +11,15 @@ import ElectricityAccidentInsuranceOrderPage from "../ElectricityAccidentInsuran
 import ExtendedAccidentInsuranceOrderPage from "../ExtendedAccidentInsuranceOrderPage";
 import GPAOrderPage from "../GPAOrderPage";
 import HomeInsuranceOrderPage from "../HomeInsuranceOrderPage";
+import CyberInsuranceOrderPage from "../CyberInsuranceOrderPage";
 
 export default function InsuranceOrderRouter() {
   const { productId, productType, category } = useParams();
+  console.log("InsuranceOrderRouter params:", {
+    productId,
+    productType,
+    category,
+  });
 
   // Check if car insurance (ô tô)
   const isCarInsurance = () => {
@@ -126,7 +132,26 @@ export default function InsuranceOrderRouter() {
     );
   };
 
+  // Check if cyber insurance (bảo hiểm an ninh mạng)
+  const isCyberInsurance = () => {
+    return (
+      category === "bao-hiem-an-ninh-mang" ||
+      productId === "bao-hiem-an-ninh-mang" ||
+      productType === "bao-hiem-an-ninh-mang"
+    );
+  };
+
   // Render đúng component
+  if (
+    isCyberInsurance() ||
+    (!productId &&
+      !productType &&
+      !category &&
+      typeof window !== "undefined" &&
+      window.location.pathname.includes("bao-hiem-an-ninh-mang"))
+  ) {
+    return <CyberInsuranceOrderPage />;
+  }
   if (isGPAInsurance()) return <GPAOrderPage />;
   if (isTravelInsurance()) return <TravelInsuranceOrderPage />;
   if (isTravelDomesticInsurance()) return <TravelDomesticInsuranceOrderPage />;

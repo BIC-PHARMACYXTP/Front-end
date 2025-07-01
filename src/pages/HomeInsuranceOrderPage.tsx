@@ -14,10 +14,6 @@ const HomeInsuranceOrderPage: React.FC = () => {
 
   // State cho các bước
   const [step, setStep] = useState(1);
-  const [participants, setParticipants] = useState([
-    { fullName: "", gender: "", dob: "", idNumber: "" },
-  ]);
-  const [numPeople, setNumPeople] = useState("1");
   const [accountInfo, setAccountInfo] = useState({
     fullName: "",
     email: "",
@@ -41,6 +37,7 @@ const HomeInsuranceOrderPage: React.FC = () => {
 
   // 1. Bảng phí phần vật chất ngôi nhà
   const houseFeeTable = [
+    // 01-15 năm
     {
       value: "300 triệu đồng",
       year: "01-15",
@@ -58,7 +55,7 @@ const HomeInsuranceOrderPage: React.FC = () => {
     {
       value: "750 triệu đồng",
       year: "01-15",
-      base: 560000,
+      base: 562500,
       ext1: 112500,
       ext2: 225000,
     },
@@ -104,20 +101,90 @@ const HomeInsuranceOrderPage: React.FC = () => {
       ext1: 750000,
       ext2: 1500000,
     },
-    // ... thêm các dòng cho 16-25 năm, >25 năm nếu cần
+    // 15-25 năm
+    {
+      value: "300 triệu đồng",
+      year: "16-25",
+      base: 360000,
+      ext1: 60000,
+      ext2: 120000,
+    },
+    {
+      value: "500 triệu đồng",
+      year: "16-25",
+      base: 600000,
+      ext1: 100000,
+      ext2: 200000,
+    },
+    {
+      value: "750 triệu đồng",
+      year: "16-25",
+      base: 900000,
+      ext1: 150000,
+      ext2: 300000,
+    },
+    {
+      value: "1 tỷ đồng",
+      year: "16-25",
+      base: 1200000,
+      ext1: 200000,
+      ext2: 400000,
+    },
+    {
+      value: "1.5 tỷ đồng",
+      year: "16-25",
+      base: 1800000,
+      ext1: 300000,
+      ext2: 600000,
+    },
+    {
+      value: "2 tỷ đồng",
+      year: "16-25",
+      base: 2400000,
+      ext1: 400000,
+      ext2: 800000,
+    },
+    {
+      value: "3 tỷ đồng",
+      year: "16-25",
+      base: 3600000,
+      ext1: 600000,
+      ext2: 1200000,
+    },
+    {
+      value: "4 tỷ đồng",
+      year: "16-25",
+      base: 4800000,
+      ext1: 800000,
+      ext2: 1600000,
+    },
+    {
+      value: "5 tỷ đồng",
+      year: "16-25",
+      base: 6000000,
+      ext1: 1000000,
+      ext2: 2000000,
+    },
   ];
   // 2. Bảng phí phần tài sản bên trong
   const assetFeeTable = [
-    { value: "100 triệu đồng", base: 30000, ext1: 15000, ext2: 105000 },
-    { value: "200 triệu đồng", base: 60000, ext1: 30000, ext2: 210000 },
-    { value: "300 triệu đồng", base: 90000, ext1: 45000, ext2: 315000 },
-    { value: "500 triệu đồng", base: 150000, ext1: 75000, ext2: 525000 },
-    { value: "750 triệu đồng", base: 225000, ext1: 112500, ext2: 787500 },
+    { value: "100 triệu đồng", base: 100000, ext1: 15000, ext2: 35000 },
+    { value: "300 triệu đồng", base: 300000, ext1: 45000, ext2: 105000 },
+    { value: "500 triệu đồng", base: 500000, ext1: 75000, ext2: 175000 },
+    { value: "750 triệu đồng", base: 750000, ext1: 112500, ext2: 262500 },
+    { value: "1 tỷ đồng", base: 1000000, ext1: 150000, ext2: 350000 },
   ];
   // 3. Hàm tính phí
   function calcHomeInsuranceFee(houseValue, year, scope, assetValue) {
+    if (year === ">25") {
+      return 0; // hoặc có thể trả về null/hoặc báo lỗi tuỳ ý
+    }
+    // Map lại year cho đúng key
+    let yearKey = year;
+    if (year === "01-15") yearKey = "01-15";
+    if (year === "16-25") yearKey = "16-25";
     const houseRow = houseFeeTable.find(
-      (r) => r.value === houseValue && r.year === year
+      (r) => r.value === houseValue && r.year === yearKey
     );
     const assetRow = assetFeeTable.find((r) => r.value === assetValue);
     let houseFee = 0;
@@ -145,22 +212,6 @@ const HomeInsuranceOrderPage: React.FC = () => {
   const discount = 0;
   const totalFee = insuranceFee - discount;
 
-  // Cập nhật số người => cập nhật mảng participants
-  React.useEffect(() => {
-    const n = Number(numPeople) || 0;
-    if (n > 0) {
-      setParticipants((current) => {
-        if (current.length === n) return current;
-        const newArr = Array.from(
-          { length: n },
-          (_, i) =>
-            current[i] || { fullName: "", gender: "", dob: "", idNumber: "" }
-        );
-        return newArr;
-      });
-    }
-  }, [numPeople]);
-
   // Xử lý chọn phạm vi bảo hiểm
   const handleScopeChange = (value: string) => {
     setScope((prev) =>
@@ -184,17 +235,6 @@ const HomeInsuranceOrderPage: React.FC = () => {
     } else {
       window.history.back();
     }
-  };
-  const handleParticipantChange = (
-    index: number,
-    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = event.target;
-    setParticipants((prev) => {
-      const arr = [...prev];
-      arr[index] = { ...arr[index], [name]: value };
-      return arr;
-    });
   };
   const handleAccountInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -326,35 +366,35 @@ const HomeInsuranceOrderPage: React.FC = () => {
                       Phạm vi bảo hiểm
                     </label>
                     <div className="flex flex-col gap-2 flex-1">
-                      <label className="grid grid-cols-[24px_1fr] items-start">
+                      <label className="grid grid-cols-[24px_1fr] items-start text-left">
                         <input
                           type="checkbox"
                           checked={true}
                           disabled
                           className="mt-1"
                         />
-                        <span>Cơ bản (cháy, nổ)</span>
+                        <span className="pl-4">Cơ bản (cháy, nổ)</span>
                       </label>
-                      <label className="grid grid-cols-[24px_1fr] items-start">
+                      <label className="grid grid-cols-[24px_1fr] items-start text-left">
                         <input
                           type="checkbox"
                           checked={scope.includes("mo-rong-1")}
                           onChange={() => handleScopeChange("mo-rong-1")}
                           className="mt-1"
                         />
-                        <span>
+                        <span className="pl-4">
                           Mở rộng 1 (Giông, Bão, Lụt, Nước tràn, Va chạm với
                           ngôi nhà, Trộm cướp)
                         </span>
                       </label>
-                      <label className="grid grid-cols-[24px_1fr] items-start">
+                      <label className="grid grid-cols-[24px_1fr] items-start text-left">
                         <input
                           type="checkbox"
                           checked={scope.includes("mo-rong-2")}
                           onChange={() => handleScopeChange("mo-rong-2")}
                           className="mt-1"
                         />
-                        <span>
+                        <span className="pl-4">
                           Mở rộng 2 (Chi phí dọn hiện trường, chữa cháy, Tiền
                           thuê nhà sau tổn thất)
                         </span>
@@ -399,7 +439,6 @@ const HomeInsuranceOrderPage: React.FC = () => {
                     >
                       <option value="01-15">01 - 15 năm</option>
                       <option value="16-25">16 - 25 năm</option>
-                      <option value=">25">Trên 25 năm</option>
                     </select>
                   </div>
                   {/* Số tiền bảo hiểm căn nhà */}
@@ -414,8 +453,12 @@ const HomeInsuranceOrderPage: React.FC = () => {
                     >
                       <option value="300 triệu đồng">300 triệu đồng</option>
                       <option value="500 triệu đồng">500 triệu đồng</option>
+                      <option value="750 triệu đồng">750 triệu đồng</option>
                       <option value="1 tỷ đồng">1 tỷ đồng</option>
-                      <option value=">1 tỷ đồng">Trên 1 tỷ đồng</option>
+                      <option value="2 tỷ đồng">2 tỷ đồng</option>
+                      <option value="3 tỷ đồng">3 tỷ đồng</option>
+                      <option value="4 tỷ đồng">4 tỷ đồng</option>
+                      <option value="5 tỷ đồng">5 tỷ đồng</option>
                     </select>
                   </div>
                   {/* Số tiền bảo hiểm tài sản */}
@@ -429,29 +472,11 @@ const HomeInsuranceOrderPage: React.FC = () => {
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 bg-white"
                     >
                       <option value="100 triệu đồng">100 triệu đồng</option>
-                      <option value="200 triệu đồng">200 triệu đồng</option>
+                      <option value="300 triệu đồng">300 triệu đồng</option>
                       <option value="500 triệu đồng">500 triệu đồng</option>
-                      <option value=">500 triệu đồng">
-                        Trên 500 triệu đồng
-                      </option>
+                      <option value="750 triệu đồng">750 triệu đồng</option>
+                      <option value="1 tỷ đồng">1 tỷ đồng</option>
                     </select>
-                  </div>
-                  {/* Số người tham gia */}
-                  <div className="flex items-center gap-8">
-                    <label className="block text-lg font-medium min-w-[220px] text-left">
-                      Số người tham gia bảo hiểm *
-                    </label>
-                    <input
-                      type="number"
-                      min={1}
-                      max={100}
-                      value={numPeople}
-                      onChange={(e) =>
-                        setNumPeople(e.target.value.replace(/\D/g, ""))
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 bg-white"
-                      placeholder="Nhập số người tham gia (<= 100)"
-                    />
                   </div>
                 </div>
               </div>

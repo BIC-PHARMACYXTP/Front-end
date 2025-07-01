@@ -763,7 +763,7 @@ function TravelDomesticInsuranceOrderPage() {
 
                 {/* Danh sách người tham gia bảo hiểm luôn nằm trong bước 2 */}
                 <div className="bg-white rounded-2xl shadow-lg p-6">
-                  <h2 className="text-2xl font-bold mb-4 text-red-600">
+                  <h2 className="text-2xl font-bold mb-4 text-red-600 text-left">
                     Danh sách người tham gia bảo hiểm
                   </h2>
                   {/* Table Header */}
