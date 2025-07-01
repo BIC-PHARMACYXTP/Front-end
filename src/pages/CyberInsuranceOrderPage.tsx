@@ -1,84 +1,84 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CustomerSupport from "../components/CustomerSupport";
-import axios from "axios";
+// import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+// const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-const insuranceOptions = [
-  {
-    value: 180_000_000,
-    label: "180 triệu đồng",
-    benefit: {
-      soTien: "180.000.000 VNĐ",
-      thuongTatVV: "Theo Bảng tỉ lệ trả tiền thương tật",
-      thuongTatTT:
-        "Nếu STBH <= 20 triệu: Theo Bảng tỉ lệ trả tiền thương tật\nNếu STBH > 20 triệu: Theo chi phí thực tế, không quá vết thương theo Bảng tỉ lệ trả tiền thương tật",
-    },
-  },
-  {
-    value: 75_000_000,
-    label: "75 triệu đồng",
-    benefit: {
-      soTien: "75.000.000 VNĐ",
-      thuongTatVV: "Theo Bảng tỉ lệ trả tiền thương tật",
-      thuongTatTT:
-        "Nếu STBH <= 20 triệu: Theo Bảng tỉ lệ trả tiền thương tật\nNếu STBH > 20 triệu: Theo chi phí thực tế, không quá vết thương theo Bảng tỉ lệ trả tiền thương tật",
-    },
-  },
-  {
-    value: 55_000_000,
-    label: "55 triệu đồng",
-    benefit: {
-      soTien: "55.000.000 VNĐ",
-      thuongTatVV: "Theo Bảng tỉ lệ trả tiền thương tật",
-      thuongTatTT:
-        "Nếu STBH <= 20 triệu: Theo Bảng tỉ lệ trả tiền thương tật\nNếu STBH > 20 triệu: Theo chi phí thực tế, không quá vết thương theo Bảng tỉ lệ trả tiền thương tật",
-    },
-  },
-  {
-    value: 40_000_000,
-    label: "40 triệu đồng",
-    benefit: {
-      soTien: "40.000.000 VNĐ",
-      thuongTatVV: "Theo Bảng tỉ lệ trả tiền thương tật",
-      thuongTatTT:
-        "Nếu STBH <= 20 triệu: Theo Bảng tỉ lệ trả tiền thương tật\nNếu STBH > 20 triệu: Theo chi phí thực tế, không quá vết thương theo Bảng tỉ lệ trả tiền thương tật",
-    },
-  },
-];
+// const insuranceOptions = [
+//   {
+//     value: 180_000_000,
+//     label: "180 triệu đồng",
+//     benefit: {
+//       soTien: "180.000.000 VNĐ",
+//       thuongTatVV: "Theo Bảng tỉ lệ trả tiền thương tật",
+//       thuongTatTT:
+//         "Nếu STBH <= 20 triệu: Theo Bảng tỉ lệ trả tiền thương tật\nNếu STBH > 20 triệu: Theo chi phí thực tế, không quá vết thương theo Bảng tỉ lệ trả tiền thương tật",
+//     },
+//   },
+//   {
+//     value: 75_000_000,
+//     label: "75 triệu đồng",
+//     benefit: {
+//       soTien: "75.000.000 VNĐ",
+//       thuongTatVV: "Theo Bảng tỉ lệ trả tiền thương tật",
+//       thuongTatTT:
+//         "Nếu STBH <= 20 triệu: Theo Bảng tỉ lệ trả tiền thương tật\nNếu STBH > 20 triệu: Theo chi phí thực tế, không quá vết thương theo Bảng tỉ lệ trả tiền thương tật",
+//     },
+//   },
+//   {
+//     value: 55_000_000,
+//     label: "55 triệu đồng",
+//     benefit: {
+//       soTien: "55.000.000 VNĐ",
+//       thuongTatVV: "Theo Bảng tỉ lệ trả tiền thương tật",
+//       thuongTatTT:
+//         "Nếu STBH <= 20 triệu: Theo Bảng tỉ lệ trả tiền thương tật\nNếu STBH > 20 triệu: Theo chi phí thực tế, không quá vết thương theo Bảng tỉ lệ trả tiền thương tật",
+//     },
+//   },
+//   {
+//     value: 40_000_000,
+//     label: "40 triệu đồng",
+//     benefit: {
+//       soTien: "40.000.000 VNĐ",
+//       thuongTatVV: "Theo Bảng tỉ lệ trả tiền thương tật",
+//       thuongTatTT:
+//         "Nếu STBH <= 20 triệu: Theo Bảng tỉ lệ trả tiền thương tật\nNếu STBH > 20 triệu: Theo chi phí thực tế, không quá vết thương theo Bảng tỉ lệ trả tiền thương tật",
+//     },
+//   },
+// ];
 
-const calcFee = (num: number, amount: number) => {
-  if (!num || !amount) return 0;
-  // Định nghĩa bảng phí
-  const feeTable: Record<number, number> = {
-    40_000_000: 100_000,
-    55_000_000: 150_000,
-    75_000_000: 200_000,
-    180_000_000: 500_000,
-  };
-  const baseFee = feeTable[amount] || 0;
-  if (num <= 6) {
-    return baseFee * num;
-  } else {
-    const extra = num - 6;
-    let extraFee = 0;
-    if (amount === 180_000_000) {
-      // Chương trình 4
-      extraFee = amount * 0.0007 * extra;
-    } else {
-      // Chương trình 1,2,3
-      extraFee = amount * 0.0005 * extra;
-    }
-    return Math.round(baseFee * 6 + extraFee);
-  }
-};
+// const calcFee = (num: number, amount: number) => {
+//   if (!num || !amount) return 0;
+//   // Định nghĩa bảng phí
+//   const feeTable: Record<number, number> = {
+//     40_000_000: 100_000,
+//     55_000_000: 150_000,
+//     75_000_000: 200_000,
+//     180_000_000: 500_000,
+//   };
+//   const baseFee = feeTable[amount] || 0;
+//   if (num <= 6) {
+//     return baseFee * num;
+//   } else {
+//     const extra = num - 6;
+//     let extraFee = 0;
+//     if (amount === 180_000_000) {
+//       // Chương trình 4
+//       extraFee = amount * 0.0007 * extra;
+//     } else {
+//       // Chương trình 1,2,3
+//       extraFee = amount * 0.0005 * extra;
+//     }
+//     return Math.round(baseFee * 6 + extraFee);
+//   }
+// };
 
 const CyberInsuranceOrderPage: React.FC = () => {
   const [step, setStep] = useState(1);
   const [numPeople, setNumPeople] = useState("");
-  const [amount, setAmount] = useState<number | null>(null);
+  const [amount] = useState<number | null>(null);
   const [error, setError] = useState("");
   const [participants, setParticipants] = useState([
     { fullName: "", gender: "", dob: "", idNumber: "" },
@@ -97,18 +97,14 @@ const CyberInsuranceOrderPage: React.FC = () => {
   });
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [insuranceStart, setInsuranceStart] = useState("");
-  const [insuranceDuration, setInsuranceDuration] = useState(12);
+  const [insuranceDuration] = useState(12);
   const [hasOtherCyberInsurance, setHasOtherCyberInsurance] = useState(false);
   const [otherCyberInsuranceCompany, setOtherCyberInsuranceCompany] =
     useState("");
 
-  const selectedOption = insuranceOptions.find((opt) => opt.value === amount);
   const fee = Number(numPeople) * 184000;
   const discount = 0;
   const total = fee - discount;
-
-  // Tính phí bảo hiểm 1 năm
-  const annualFee = calcFee(Number(numPeople), amount || 0);
 
   // Cập nhật số người => cập nhật mảng participants
   React.useEffect(() => {
@@ -177,32 +173,32 @@ const CyberInsuranceOrderPage: React.FC = () => {
       const endDate = new Date(startDate);
       endDate.setMonth(endDate.getMonth() + insuranceDuration);
 
-      const invoice = {
-        product_id: 13,
-        InsuranceAmount: amount,
-        InsuranceQuantity: Number(numPeople),
-        InsuranceStart: startDate.toISOString(), // RFC3339 format
-        InsuranceEnd: endDate.toISOString(), // RFC3339 format
-        ContractType: "Mới",
-        Status: "Chưa thanh toán",
-      };
+      // const invoice = {
+      //   product_id: 13,
+      //   InsuranceAmount: amount,
+      //   InsuranceQuantity: Number(numPeople),
+      //   InsuranceStart: startDate.toISOString(), // RFC3339 format
+      //   InsuranceEnd: endDate.toISOString(), // RFC3339 format
+      //   ContractType: "Mới",
+      //   Status: "Chưa thanh toán",
+      // };
       // 2. Chuẩn bị participants với định dạng RFC3339 cho ngày sinh
-      const participantsPayload = participants.map((p) => ({
-        FullName: p.fullName,
-        Gender:
-          p.gender === "male" ? "Nam" : p.gender === "female" ? "Nữ" : "Khác",
-        BirthDate: p.dob ? new Date(p.dob).toISOString() : null, // RFC3339 format
-        IdentityNumber: p.idNumber,
-      }));
+      // const participantsPayload = participants.map((p) => ({
+      //   FullName: p.fullName,
+      //   Gender:
+      //     p.gender === "male" ? "Nam" : p.gender === "female" ? "Nữ" : "Khác",
+      //   BirthDate: p.dob ? new Date(p.dob).toISOString() : null, // RFC3339 format
+      //   IdentityNumber: p.idNumber,
+      // }));
       // 3. Gọi API tạo hóa đơn
-      const res = await axios.post(
-        `${API_URL}/api/insurance_accident/create_accident`,
-        {
-          invoice,
-          participants: participantsPayload,
-        }
-      );
-      const invoice_id = res.data.invoice?.invoice_id;
+      // const res = await axios.post(
+      //   `${API_URL}/api/insurance_accident/create_accident`,
+      //   {
+      //     invoice,
+      //     participants: participantsPayload,
+      //   }
+      // );
+      // const invoice_id = res.data.invoice?.invoice_id;
       // 4. (Tuỳ chọn) Gọi API update customer cho invoice nếu cần
       // await axios.post(`${API_URL}/api/insurance_accident/update_invoice_customer`, { invoice_id, customer_id: ... });
       // 5. Lưu đơn hàng vào localStorage và chuyển hướng
@@ -241,7 +237,7 @@ const CyberInsuranceOrderPage: React.FC = () => {
           <div className="max-w-5xl mx-auto mb-8">
             {/* Progress Bar */}
             <div className="flex items-center justify-center mb-8">
-              {[1, 2, 3].map((s, idx) => (
+              {[1, 2, 3].map((s) => (
                 <React.Fragment key={s}>
                   <div className="flex flex-col items-center">
                     <div

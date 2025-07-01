@@ -14,7 +14,7 @@ const HomeInsuranceOrderPage: React.FC = () => {
 
   // State cho các bước
   const [step, setStep] = useState(1);
-  const [numPeople, setNumPeople] = useState("1");
+  const [numPeople] = useState("1");
   const [accountInfo, setAccountInfo] = useState({
     fullName: "",
     email: "",
