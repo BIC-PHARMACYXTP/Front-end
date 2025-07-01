@@ -1,6 +1,6 @@
 import { ClipboardList, UserCircle2 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Form, Select } from "antd";
+import { Select } from "antd";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CustomerSupport from "../components/CustomerSupport";
@@ -45,7 +45,6 @@ interface CustomerInfo {
 
 export default function MotorcycleCivilLiabilityOrderPage() {
   const navigate = useNavigate();
-  const [form] = Form.useForm();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const totalSteps = 2;

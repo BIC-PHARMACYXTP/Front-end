@@ -1,4 +1,4 @@
-import { api } from "@/lib/api";
+import axios from "axios";
 
 export interface Province {
   code: string;
@@ -12,13 +12,13 @@ export interface District {
 }
 
 export const getProvinces = async (): Promise<Province[]> => {
-  const response = await api.get("/provinces");
+  const response = await axios.get("/provinces");
   return response.data;
 };
 
 export const getDistricts = async (
   provinceCode: string
 ): Promise<District[]> => {
-  const response = await api.get(`/districts?provinceCode=${provinceCode}`);
+  const response = await axios.get(`/districts?provinceCode=${provinceCode}`);
   return response.data;
 };

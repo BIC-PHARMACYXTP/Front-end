@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
 
 interface StatItem {
@@ -8,7 +8,7 @@ interface StatItem {
   icon: string;
 }
 
-const mockStats = [
+const mockStats: StatItem[] = [
   {
     title: "Tổng doanh thu",
     value: 150000000,
@@ -36,18 +36,19 @@ const mockStats = [
 ];
 
 const Dashboard = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState("week");
+  const [selectedPeriod, setSelectedPeriod] = useState<string>("week");
   const salesChartRef = useRef<Chart | null>(null);
   const ordersChartRef = useRef<Chart | null>(null);
+  const salesCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const ordersCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     // Khởi tạo biểu đồ doanh thu
-    const salesCtx = document.getElementById("salesChart") as HTMLCanvasElement;
-    if (salesCtx) {
+    if (salesCanvasRef.current) {
       if (salesChartRef.current) {
         salesChartRef.current.destroy();
       }
-      salesChartRef.current = new Chart(salesCtx, {
+      salesChartRef.current = new Chart(salesCanvasRef.current, {
         type: "line",
         data: {
           labels: ["T2", "T3", "T4", "T5", "T6", "T7", "CN"],
@@ -76,7 +77,8 @@ const Dashboard = () => {
             y: {
               beginAtZero: true,
               ticks: {
-                callback: (value) => `${(Number(value) / 1000000).toFixed(1)}M`,
+                callback: (value: string | number) =>
+                  `${(Number(value) / 1000000).toFixed(1)}M`,
               },
             },
           },
@@ -85,14 +87,11 @@ const Dashboard = () => {
     }
 
     // Khởi tạo biểu đồ đơn hàng
-    const ordersCtx = document.getElementById(
-      "ordersChart"
-    ) as HTMLCanvasElement;
-    if (ordersCtx) {
+    if (ordersCanvasRef.current) {
       if (ordersChartRef.current) {
         ordersChartRef.current.destroy();
       }
-      ordersChartRef.current = new Chart(ordersCtx, {
+      ordersChartRef.current = new Chart(ordersCanvasRef.current, {
         type: "doughnut",
         data: {
           labels: [
@@ -129,9 +128,11 @@ const Dashboard = () => {
     return () => {
       if (salesChartRef.current) {
         salesChartRef.current.destroy();
+        salesChartRef.current = null;
       }
       if (ordersChartRef.current) {
         ordersChartRef.current.destroy();
+        ordersChartRef.current = null;
       }
     };
   }, []);
@@ -183,7 +184,7 @@ const Dashboard = () => {
             </select>
           </div>
           <div className="h-80">
-            <canvas id="salesChart"></canvas>
+            <canvas ref={salesCanvasRef}></canvas>
           </div>
         </div>
 
@@ -191,7 +192,7 @@ const Dashboard = () => {
         <div className="bg-white rounded-lg shadow p-4 border border-gray-100">
           <h3 className="text-lg font-semibold mb-4">Trạng thái đơn hàng</h3>
           <div className="h-80">
-            <canvas id="ordersChart"></canvas>
+            <canvas ref={ordersCanvasRef}></canvas>
           </div>
         </div>
       </div>

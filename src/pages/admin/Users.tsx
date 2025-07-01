@@ -12,7 +12,7 @@ interface User {
   phone: string;
 }
 
-const mockUsers = [
+const mockUsers: User[] = [
   {
     user_id: 1,
     username: "manhmtk",
@@ -35,10 +35,10 @@ const mockUsers = [
   },
 ];
 
-const Users = () => {
+const Users: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [error, setError] = useState("");
+  const [searchKeyword, setSearchKeyword] = useState<string>("");
+  const [error] = useState<string>("");
 
   useEffect(() => {
     // TODO: Gọi API lấy danh sách người dùng
@@ -128,7 +128,7 @@ const Users = () => {
                   <img
                     src={
                       "https://ui-avatars.com/api/?name=" +
-                      user.full_name.replace(/s+/g, "+")
+                      encodeURIComponent(user.full_name.replace(/\s+/g, "+"))
                     }
                     alt={user.full_name}
                     className="w-10 h-10 rounded-full object-cover inline-block"

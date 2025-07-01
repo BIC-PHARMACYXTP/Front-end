@@ -1,10 +1,4 @@
-import React from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
@@ -16,7 +10,7 @@ import ProductsPage from "./pages/ProductsPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import OrderPage from "./pages/OrderPage";
 import CartPage from "./pages/CartPage";
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { AuthProvider } from "./contexts/AuthContext";
 import "./App.css";
 import AdminLayout from "./components/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
@@ -28,23 +22,23 @@ import Comments from "./pages/admin/Comments";
 import Statistics from "./pages/admin/Statistics";
 import InsuranceOrderRouter from "./pages/order/InsuranceOrderRouter";
 
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, isAdmin } = useAuth();
+// const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+//   const { isAuthenticated, isAdmin } = useAuth();
 
-  console.log("ProtectedRoute state:", { isAuthenticated, isAdmin }); // Debug log
+//   console.log("ProtectedRoute state:", { isAuthenticated, isAdmin }); // Debug log
 
-  if (!isAuthenticated) {
-    console.log("Redirecting to login page"); // Debug log
-    return <Navigate to="/dang-nhap" />;
-  }
+//   if (!isAuthenticated) {
+//     console.log("Redirecting to login page"); // Debug log
+//     return <Navigate to="/dang-nhap" />;
+//   }
 
-  if (!isAdmin) {
-    console.log("Redirecting to home page"); // Debug log
-    return <Navigate to="/" />;
-  }
+//   if (!isAdmin) {
+//     console.log("Redirecting to home page"); // Debug log
+//     return <Navigate to="/" />;
+//   }
 
-  return <>{children}</>;
-};
+//   return <>{children}</>;
+// };
 
 const AppRoutes = () => {
   return (

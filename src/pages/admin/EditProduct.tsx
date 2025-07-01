@@ -16,9 +16,10 @@ interface Product {
   images: string[];
 }
 
-const EditProduct = () => {
+const EditProduct: React.FC = () => {
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
+  const params = useParams();
+  const id = params.id;
   const [categories, setCategories] = useState<Category[]>([]);
   const [formData, setFormData] = useState<Product>({
     product_id: 0,
@@ -29,9 +30,8 @@ const EditProduct = () => {
     category_id: 0,
     images: [],
   });
-  const [newImages, setNewImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     // TODO: Gọi API lấy danh sách danh mục
@@ -76,7 +76,10 @@ const EditProduct = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]:
+        name === "price" || name === "sale_price" || name === "category_id"
+          ? Number(value)
+          : value,
     }));
   };
 
@@ -84,7 +87,6 @@ const EditProduct = () => {
     const files = Array.from(e.target.files || []);
     if (files.length > 0) {
       const newPreviews = files.map((file) => URL.createObjectURL(file));
-      setNewImages((prev) => [...prev, ...files]);
       setImagePreviews((prev) => [...prev, ...newPreviews]);
     }
   };
@@ -99,8 +101,7 @@ const EditProduct = () => {
       setImagePreviews((prev) => prev.filter((_, i) => i !== index));
     } else {
       // Xóa ảnh mới
-      const newIndex = index - formData.images.length;
-      setNewImages((prev) => prev.filter((_, i) => i !== newIndex));
+      // const newIndex = index - formData.images.length;
       setImagePreviews((prev) => prev.filter((_, i) => i !== index));
     }
   };
@@ -263,7 +264,7 @@ const EditProduct = () => {
                       <img
                         src={
                           index < formData.images.length
-                            ? `/upload/${preview}`
+                            ? `/upload/${formData.images[index]}`
                             : preview
                         }
                         alt={`Preview ${index + 1}`}

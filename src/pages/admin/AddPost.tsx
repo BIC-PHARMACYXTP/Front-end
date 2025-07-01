@@ -44,7 +44,7 @@ const AddPost = () => {
     }));
   };
 
-  const handleEditorChange = (event: any, editor: any) => {
+  const handleEditorChange = (_event: any, editor: any) => {
     const data = editor.getData();
     setFormData((prev) => ({
       ...prev,
@@ -131,7 +131,7 @@ const AddPost = () => {
                   Nội dung
                 </label>
                 <CKEditor
-                  editor={ClassicEditor}
+                  editor={ClassicEditor as any}
                   data={formData.content}
                   onChange={handleEditorChange}
                 />

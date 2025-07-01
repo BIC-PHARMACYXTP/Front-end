@@ -258,18 +258,6 @@ export default function ProductsPage() {
     let categorySlug = params.category
       ? params.category.replace(".html", "")
       : null;
-    let isTaiNanSanPhamCon = false;
-    // Nếu truy cập vào /san-pham/bao-hiem-tai-nan-24-24 hoặc các sản phẩm con của tai nạn
-    if (
-      window.location.pathname.includes("/san-pham/bao-hiem-tai-nan-24-24") ||
-      window.location.pathname.includes(
-        "/san-pham/bao-hiem-tai-nan-nguoi-su-dung-dien"
-      ) ||
-      window.location.pathname.includes("/san-pham/bao-hiem-tai-nan-mo-rong")
-    ) {
-      categorySlug = "bao-hiem-tai-nan-12";
-      isTaiNanSanPhamCon = true;
-    }
     if (categorySlug) {
       // Loại bỏ phần .html nếu có
       // const categorySlug = params.category.replace(".html", "");

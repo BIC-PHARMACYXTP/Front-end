@@ -9,7 +9,6 @@ import {
   calculateTotalInsuranceFee,
 } from "../constants/carInsurance";
 import axios from "axios";
-import { useAuth } from "../contexts/AuthContext";
 
 const API_URL = import.meta.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -59,7 +58,6 @@ interface VehicleInfo {
 }
 
 export default function OrderPage() {
-  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   // State cho thông tin sản phẩm

@@ -18,10 +18,10 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const mockUsers: User[] = [
-  { username: "admin", role: "admin" },
-  { username: "user", role: "user" },
-];
+// const mockUsers: User[] = [
+//   { username: "admin", role: "admin" },
+//   { username: "user", role: "user" },
+// ];
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,

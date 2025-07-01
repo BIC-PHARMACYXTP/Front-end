@@ -54,16 +54,6 @@ interface CustomerInfo {
   insuranceStartDate?: string;
 }
 
-interface HealthDeclared {
-  height: number;
-  weight: number;
-  bloodPressure: string;
-  medicalConditions: boolean;
-  surgeryHistory: boolean;
-  familyHistory: boolean;
-  medicalTreatment: boolean;
-}
-
 interface InsurancePackage {
   id: "fundamental" | "basic" | "silver" | "gold" | "advance" | "premium";
   name: string;
@@ -130,7 +120,6 @@ const PREMIUM_DATA = {
 export default function PersonalAccidentHealthInsuranceOrderPage() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showError, setShowError] = useState(false);
   const totalSteps = 4;
@@ -318,16 +307,6 @@ export default function PersonalAccidentHealthInsuranceOrderPage() {
     return insuredPersons.reduce((sum, person) => sum + person.premium, 0);
   };
 
-  const formatPhoneNumber = (value: string) => {
-    const numbers = value.replace(/\D/g, "");
-    return numbers.slice(0, 10);
-  };
-
-  const formatIdentityCard = (value: string) => {
-    const numbers = value.replace(/\D/g, "");
-    return numbers.slice(0, 12);
-  };
-
   const handleNext = async () => {
     setShowError(false);
     let currentStepErrors: { [key: string]: string } = {};
@@ -446,7 +425,6 @@ export default function PersonalAccidentHealthInsuranceOrderPage() {
 
   const handleSubmit = async () => {
     try {
-      setIsSubmitting(true);
       // 1. Chuẩn bị payload tạo hóa đơn (invoice)
       const insuranceStart = dayjs(
         customerInfo.insuranceStartDate
@@ -598,7 +576,6 @@ export default function PersonalAccidentHealthInsuranceOrderPage() {
       navigate("/gio-hang.html");
     } catch (error) {
       setShowError(true);
-      setIsSubmitting(false);
       alert(
         "Có lỗi xảy ra khi xử lý đơn hàng. Vui lòng thử lại hoặc liên hệ hỗ trợ. Xem chi tiết lỗi ở Console."
       );

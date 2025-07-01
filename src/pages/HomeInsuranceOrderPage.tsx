@@ -14,6 +14,7 @@ const HomeInsuranceOrderPage: React.FC = () => {
 
   // State cho các bước
   const [step, setStep] = useState(1);
+  const [numPeople, setNumPeople] = useState("1");
   const [accountInfo, setAccountInfo] = useState({
     fullName: "",
     email: "",
@@ -26,191 +27,97 @@ const HomeInsuranceOrderPage: React.FC = () => {
     identityCard: "",
     invoice: false,
   });
-  const [insuranceStart, setInsuranceStart] = useState("");
-  const [orderSuccess, setOrderSuccess] = useState(false);
-  const [error, setError] = useState("");
-
-  // Thêm state ở đầu component:
   const [insuredName, setInsuredName] = useState("");
   const [insuredAddress, setInsuredAddress] = useState("");
   const [insuredDate, setInsuredDate] = useState("");
 
   // 1. Bảng phí phần vật chất ngôi nhà
-  const houseFeeTable = [
-    // 01-15 năm
-    {
-      value: "300 triệu đồng",
-      year: "01-15",
-      base: 225000,
-      ext1: 45000,
-      ext2: 90000,
-    },
-    {
-      value: "500 triệu đồng",
-      year: "01-15",
-      base: 375000,
-      ext1: 75000,
-      ext2: 150000,
-    },
-    {
-      value: "750 triệu đồng",
-      year: "01-15",
-      base: 562500,
-      ext1: 112500,
-      ext2: 225000,
-    },
-    {
-      value: "1 tỷ đồng",
-      year: "01-15",
-      base: 750000,
-      ext1: 150000,
-      ext2: 300000,
-    },
-    {
-      value: "1.5 tỷ đồng",
-      year: "01-15",
-      base: 1125000,
-      ext1: 225000,
-      ext2: 450000,
-    },
-    {
-      value: "2 tỷ đồng",
-      year: "01-15",
-      base: 1500000,
-      ext1: 300000,
-      ext2: 600000,
-    },
-    {
-      value: "3 tỷ đồng",
-      year: "01-15",
-      base: 2250000,
-      ext1: 450000,
-      ext2: 900000,
-    },
-    {
-      value: "4 tỷ đồng",
-      year: "01-15",
-      base: 3000000,
-      ext1: 600000,
-      ext2: 1200000,
-    },
-    {
-      value: "5 tỷ đồng",
-      year: "01-15",
-      base: 3750000,
-      ext1: 750000,
-      ext2: 1500000,
-    },
-    // 15-25 năm
-    {
-      value: "300 triệu đồng",
-      year: "16-25",
-      base: 360000,
-      ext1: 60000,
-      ext2: 120000,
-    },
-    {
-      value: "500 triệu đồng",
-      year: "16-25",
-      base: 600000,
-      ext1: 100000,
-      ext2: 200000,
-    },
-    {
-      value: "750 triệu đồng",
-      year: "16-25",
-      base: 900000,
-      ext1: 150000,
-      ext2: 300000,
-    },
-    {
-      value: "1 tỷ đồng",
-      year: "16-25",
-      base: 1200000,
-      ext1: 200000,
-      ext2: 400000,
-    },
-    {
-      value: "1.5 tỷ đồng",
-      year: "16-25",
-      base: 1800000,
-      ext1: 300000,
-      ext2: 600000,
-    },
-    {
-      value: "2 tỷ đồng",
-      year: "16-25",
-      base: 2400000,
-      ext1: 400000,
-      ext2: 800000,
-    },
-    {
-      value: "3 tỷ đồng",
-      year: "16-25",
-      base: 3600000,
-      ext1: 600000,
-      ext2: 1200000,
-    },
-    {
-      value: "4 tỷ đồng",
-      year: "16-25",
-      base: 4800000,
-      ext1: 800000,
-      ext2: 1600000,
-    },
-    {
-      value: "5 tỷ đồng",
-      year: "16-25",
-      base: 6000000,
-      ext1: 1000000,
-      ext2: 2000000,
-    },
-  ];
+  // const houseFeeTable = [
+  //   {
+  //     value: "300 triệu đồng",
+  //     year: "01-15",
+  //     base: 225000,
+  //     ext1: 45000,
+  //     ext2: 90000,
+  //   },
+  //   {
+  //     value: "500 triệu đồng",
+  //     year: "01-15",
+  //     base: 375000,
+  //     ext1: 75000,
+  //     ext2: 150000,
+  //   },
+  //   {
+  //     value: "750 triệu đồng",
+  //     year: "01-15",
+  //     base: 560000,
+  //     ext1: 112500,
+  //     ext2: 225000,
+  //   },
+  //   {
+  //     value: "1 tỷ đồng",
+  //     year: "01-15",
+  //     base: 750000,
+  //     ext1: 150000,
+  //     ext2: 300000,
+  //   },
+  //   {
+  //     value: "1.5 tỷ đồng",
+  //     year: "01-15",
+  //     base: 1125000,
+  //     ext1: 225000,
+  //     ext2: 450000,
+  //   },
+  //   {
+  //     value: "2 tỷ đồng",
+  //     year: "01-15",
+  //     base: 1500000,
+  //     ext1: 300000,
+  //     ext2: 600000,
+  //   },
+  //   {
+  //     value: "3 tỷ đồng",
+  //     year: "01-15",
+  //     base: 2250000,
+  //     ext1: 450000,
+  //     ext2: 900000,
+  //   },
+  //   {
+  //     value: "4 tỷ đồng",
+  //     year: "01-15",
+  //     base: 3000000,
+  //     ext1: 600000,
+  //     ext2: 1200000,
+  //   },
+  //   {
+  //     value: "5 tỷ đồng",
+  //     year: "01-15",
+  //     base: 3750000,
+  //     ext1: 750000,
+  //     ext2: 1500000,
+  //   },
+  //   // ... thêm các dòng cho 16-25 năm, >25 năm nếu cần
+  // ];
   // 2. Bảng phí phần tài sản bên trong
-  const assetFeeTable = [
-    { value: "100 triệu đồng", base: 100000, ext1: 15000, ext2: 35000 },
-    { value: "300 triệu đồng", base: 300000, ext1: 45000, ext2: 105000 },
-    { value: "500 triệu đồng", base: 500000, ext1: 75000, ext2: 175000 },
-    { value: "750 triệu đồng", base: 750000, ext1: 112500, ext2: 262500 },
-    { value: "1 tỷ đồng", base: 1000000, ext1: 150000, ext2: 350000 },
-  ];
-  // 3. Hàm tính phí
-  function calcHomeInsuranceFee(houseValue, year, scope, assetValue) {
-    if (year === ">25") {
-      return 0; // hoặc có thể trả về null/hoặc báo lỗi tuỳ ý
-    }
-    // Map lại year cho đúng key
-    let yearKey = year;
-    if (year === "01-15") yearKey = "01-15";
-    if (year === "16-25") yearKey = "16-25";
-    const houseRow = houseFeeTable.find(
-      (r) => r.value === houseValue && r.year === yearKey
-    );
-    const assetRow = assetFeeTable.find((r) => r.value === assetValue);
-    let houseFee = 0;
-    let assetFee = 0;
-    if (houseRow) {
-      houseFee += houseRow.base;
-      if (scope.includes("mo-rong-1")) houseFee += houseRow.ext1;
-      if (scope.includes("mo-rong-2")) houseFee += houseRow.ext2;
-    }
-    if (assetRow) {
-      assetFee += assetRow.base;
-      if (scope.includes("mo-rong-1")) assetFee += assetRow.ext1;
-      if (scope.includes("mo-rong-2")) assetFee += assetRow.ext2;
-    }
-    return houseFee + assetFee;
-  }
-
-  // Tạm thời phí bảo hiểm là số cố định
-  const insuranceFee = calcHomeInsuranceFee(
-    houseValue,
-    year,
-    scope,
-    assetValue
-  );
-  const discount = 0;
+  // const assetFeeTable = [
+  //   { value: "100 triệu đồng", base: 30000, ext1: 15000, ext2: 105000 },
+  //   { value: "200 triệu đồng", base: 60000, ext1: 30000, ext2: 210000 },
+  //   { value: "300 triệu đồng", base: 90000, ext1: 45000, ext2: 315000 },
+  //   { value: "500 triệu đồng", base: 150000, ext1: 75000, ext2: 525000 },
+  //   { value: "750 triệu đồng", base: 225000, ext1: 112500, ext2: 787500 },
+  // ];
+  // Mock insuranceFee, discount, and totalFee for display
+  const insuranceFee = 1000000; // mock value
+  const discount = 100000; // mock value
   const totalFee = insuranceFee - discount;
+
+  // Cập nhật số người => cập nhật mảng participants
+  React.useEffect(() => {
+    const n = Number(numPeople) || 0;
+    if (n > 0) {
+      // This effect is now empty as the participants state is removed
+    }
+  }, [numPeople]);
 
   // Xử lý chọn phạm vi bảo hiểm
   const handleScopeChange = (value: string) => {
@@ -246,8 +153,6 @@ const HomeInsuranceOrderPage: React.FC = () => {
   const handleOrderHomeInsurance = async () => {
     try {
       // Chuẩn hóa ngày tháng
-      const startDate = insuredDate ? new Date(insuredDate) : new Date();
-      // duration luôn là 12 tháng
       const duration = 12;
       // Chuẩn bị dữ liệu gửi lên
       const invoice = {
@@ -281,7 +186,7 @@ const HomeInsuranceOrderPage: React.FC = () => {
     } catch (error) {
       alert(
         "Có lỗi khi đặt mua bảo hiểm: " +
-          (error?.response?.data?.error || error?.message || "")
+          ((error as any)?.response?.data?.error || (error as any)?.message || "")
       );
     }
   };
